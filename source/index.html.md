@@ -115,6 +115,23 @@ b. 对string进行md5运算，最终得到32位小写的sign值XXXXXXXXXX...;
 
 ##签名生成方法示例
 
+
+>完整请求数据格式 :
+
+```json
+{	
+  "common":{	
+    "accesskey":"zhangsan",
+    "sign":"acd1761b47fb5d65c1ef9e644adba4fc",
+    "timestamp":"1500000000000"
+  },
+  "data":{
+    "symbol":"BTC/USD",
+    "num"   :"50"
+  }
+}
+```
+
 假设有一个调用请求，
 
 业务参数如下：
@@ -132,19 +149,6 @@ accesskey=zhangsan&num=50&secretkey=zhangsan&symbol=BTC/USD&timestamp=1500000000
 ii：经过 b 过程后得到 sign 为 :
 signValue = md5(string);
 
-完整请求数据格式 :
-
-{	
-  "common":{	
-    "accesskey":"zhangsan",
-    "sign":"acd1761b47fb5d65c1ef9e644adba4fc",
-    "timestamp":"1500000000000"
-  },
-  "data":{
-    "symbol":"BTC/USD",
-    "num"   :"50"
-  }
-}
 
 ##全局通用状态码
 
