@@ -104,6 +104,21 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 ## 获取个人资产信息
 
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+
+    }
+}
+```
+
 > 返回示例:
 
 ```json
@@ -143,16 +158,21 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 `POST`
 
-### 接口请求参数
+### 请求参数
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+    使用公有参数
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+### 响应参数
+
+字段名 | 描述
+--------- | -----------
+userNo    | 用户的编号
+email     | 用户邮箱 
+timestamp | 系统时间戳(毫秒数) 
+result    | 返回结果       
+total     | 总余额        
+available | 可用余额       
+
 
 ## Get a Specific Kitten
 
