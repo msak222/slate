@@ -15,51 +15,21 @@ search: true
 
 # 介绍
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足应用程序开发人员，数据科学家和企业业务平台的关键任务需求。
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+此API参考包括开发人员集成第三方应用程序和平台所需的所有技术文档。
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+# 全局规则
 
-# 认证
+ ##接口访问前缀
+> 接口访问前缀:https://api.coinsuper.com
 
-> To authorize, use this code:
+> 接口链接请求示例(获取个人资产信息链接)：https://api.coinsuper.com/api/v1/asset/userAssetInfo
 
-```ruby
-require 'kittn'
+接口访问前缀：https://api.coinsuper.com
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
+接口链接请求示例(获取个人资产信息链接)：https://api.coinsuper.com/api/v1/asset/userAssetInfo
 
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
 
 # 用户资产查询管理
 
