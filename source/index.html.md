@@ -21,14 +21,13 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 # 全局规则
 
- ##接口访问前缀
-> 接口访问前缀:https://api.coinsuper.com
-
-> 接口链接请求示例(获取个人资产信息链接)：https://api.coinsuper.com/api/v1/asset/userAssetInfo
+##接口访问前缀
 
 接口访问前缀：https://api.coinsuper.com
 
 接口链接请求示例(获取个人资产信息链接)：https://api.coinsuper.com/api/v1/asset/userAssetInfo
+
+##接口规则
 
 
 # 用户资产查询管理
