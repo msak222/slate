@@ -522,3 +522,401 @@ available | 可用余额
 | symbol            | 交易对                                      |
 | utcUpdate         | 最后成交时间戳(毫秒级)                             |
 | utcCreate         | 委托时间戳(毫秒级)                               |
+
+
+## 查询订单交易详情(根据委托单号)
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "orderNoList":"1612930403329875969,1612930403329875970"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":1000,
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000",
+            "result":[
+                        { 
+                                    "orderNo":"1612930403329875969",                     
+                                    "priceLimit": "0.00000000",                
+                                    "quantity": "1.00000000",                  
+                                    "symbol":"ETC/BTC",                        
+                                    "action":"SELL",                           
+                                    "orderType":"MKT",                         
+                                    "fee":"0.23",                              
+                                    "quantityRemaining": "0.00000000",         
+                                    "amount": "0.00000000",                    
+                                    "amountRemaining": "0.00000000",           
+                                    "state":"DEAL",                           
+                                    "detail":[
+                                                {
+                                                    "matchType":"MAKER",        
+                                                    "price": "0.00213640",       
+                                                    "volume": "0.42220000",       
+                                                    "utcDeal":"123123412",       
+                                                    "fee":"0.01",              
+                                                    "feeCurrency":"BTC"        
+                                                },
+                                               {
+                                                 "matchType":"MAKER",        
+                                                 "price": "0.00213640",       
+                                                 "volume": "0.42220000",       
+                                                 "utcDeal":"123123412",       
+                                                 "fee":"0.01",              
+                                                 "feeCurrency":"BUC"        
+                                               } 
+                                            ]    
+                        },
+                        { 
+                        "orderNo":"1612930403329875969",                     
+                        "priceLimit": "0.00000000",                
+                        "quantity": "1.00000000",                  
+                        "symbol":"ETC/BTC",                        
+                        "action":"SELL",                           
+                        "orderType":"MKT",                         
+                        "fee":"0.23",                              
+                        "quantityRemaining": "0.00000000",         
+                        "amount": "0.00000000",                    
+                        "amountRemaining": "0.00000000",           
+                        "state":"DEAL",                           
+                        "detail":[
+                                    {
+                                        "matchType":"MAKER",        
+                                        "price": "0.00213640",       
+                                        "volume": "0.42220000",       
+                                        "utcDeal":"123123412",       
+                                        "fee":"0.01",              
+                                        "feeCurrency":"BTC"        
+                                    },
+                                   {
+                                     "matchType":"MAKER",        
+                                     "price": "0.00213640",       
+                                     "volume": "0.42220000",       
+                                     "utcDeal":"123123412",       
+                                     "fee":"0.01",              
+                                     "feeCurrency":"BUC"        
+                                   } 
+                                ]    
+                        }
+                    ]
+            }
+}
+```
+
+获取用户已成交委托单详细交易信息(一次最大查询50条已成交委托单的交易详情信息)
+
+### 请求路径
+
+`/api/v1/order/details`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名         | 填写类型 | 描述                               |
+| ----------- | ---- | -------------------------------- |
+| orderNoList | 必填   | 要查询的委托单号列表(将委托单号拼接为字符串，中间用逗号分隔开) |
+
+### 响应参数
+
+| 字段名               | 描述                                       |
+| ----------------- | ---------------------------------------- |
+| timestamp         | 时间戳(毫秒数)                                 |
+| result            | 返回结果                                     |
+| orderNo           | 委托单号                                     |
+| priceLimit        | 委托价格                                     |
+| price             | 交易价格                                     |
+| quantity          | 委托数量                                     |
+| quantityRemaining | 委托剩余数量                                   |
+| amount            | 委托金额                                     |
+| amountRemaining   | 剩余金额                                     |
+| volume            | 成交数量                                     |
+| action            | 买卖类型 SELL-卖，BUY-买                        |
+| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
+| fee               | 交易手续费（以detail交易明细中的手续费为准）                |
+| feeCurrency       | 交易手续费币种                                  |
+| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销，PROCESSING：处理中 |
+| matchType         | 匹配类型：MAKER-被动匹配，TAKER-主动匹配               |
+| symbol            | 交易对                                      |
+| detail            | 交易明细                                     |
+| utcDeal           | 交易时间戳(毫秒级)                               |
+
+
+## 挂单单号列表(个人未完全成交委托单列表)
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "symbol":"ETC/BTC",                
+            "num":"1000"		
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":[
+                  "1603147161792831491",
+                  "1603147093327106049",
+                  "1603147072028430337"
+             ]
+    }
+}
+```
+
+请求最新挂单单号列表(时间最近的委托单单号列表)
+
+### 请求路径
+
+`/api/v1/order/openList`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名    | 填写类型 | 描述                |
+| ------ | ---- | ----------------- |
+| symbol | 非必填  | 交易对，若不填则查询所有交易对   |
+| num    | 必填   | 请求的单号条数，最大不超过1000 |
+
+### 响应参数
+
+| 字段名       | 描述       |
+| --------- | -------- |
+| timestamp | 时间戳(毫秒数) |
+| result    | 返回结果     |
+
+
+## 查询个人历史委托单列表
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "symbol":"ETC/BTC",                   
+            "utcStart":"1536818874583",          
+            "withTrade":"true"         
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":1500000000123,
+            "result":[ 
+                        {
+                            "orderNo":"123412313",             
+                            "action":"SELL",                   
+                            "orderType":"MKT",                  
+                            "priceAverage": "0.00000000",
+                            "priceLimit":"0.00000000",         
+                            "symbol":"ETC/BTC",                  
+                            "quantity" :"0.00010000",           
+                            "quantityRemaining":"0.00010000",   
+                            "amount":"0.00000000",               
+                            "amountRemaining":"0.00000000",     
+                            "fee":"0.00000000",                 
+                            "utcUpdate":"1500000000000",        
+                            "utcCreate":"1500000000000",          
+                            "state":"CANCEL",                  
+                            "detail": [
+                                  {
+                                      "dealNo": "234234114241",
+                                      "matchType": "ACTIVE",
+                                      "price": "0.00001000",
+                                      "utcDeal": "1500000000000",
+                                      "volume": "1.4266",
+                                      "fee":"0.01",
+                                      "feeCurrency":"BTC"
+                                  },
+                                  {
+                                      "dealNo": "24234212312",
+                                      "matchType": "PASSIVE",
+                                      "price": "0.00001000",
+                                      "utcDeal": "1500000000000",
+                                      "volume": "0.00001000",
+                                      "fee":"0.01",
+                                      "feeCurrency":"BTC"
+                                  }
+                              ]
+                        }
+                    ]
+            }
+}
+```
+
+请求个人历史委托单列表
+
+### 请求路径
+
+`/api/v1/order/history`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名          | 填写类型 | 描述                                      |
+| ------------ | ---- | --------------------------------------- |
+| symbol       | 必填   | 交易对                                     |
+| utcStart     | 必填   | 查询开始时间(查询下单时间≥该时间的委托单，毫秒时间戳)            |
+| utcEnd       | 非必填  | 查询结束时间(查询下单时间≤该时间的委托单，毫秒时间戳)            |
+| startOrderNo | 非必填  | 起始委托单号（查询结果中不含该单号的数据，不传则表示查第一页数据）       |
+| withTrade    | 非必填  | 是否需要返回对应委托单的交易明细（true-返回，false-不返回（小写）） |
+| size         | 非必填  | 查询条数(取值范围暂定为1~100)                      |
+
+### 响应参数
+
+| 字段名               | 描述                                       |
+| ----------------- | ---------------------------------------- |
+| timestamp         | 时间戳(毫秒数)                                 |
+| result            | 返回结果                                     |
+| orderNo           | 委托单号                                     |
+| action            | 买卖类型 SELL-卖，BUY-买                        |
+| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
+| priceLimit        | 委托价格                                     |
+| priceAverage      | 成交均价                                     |
+| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销 |
+| quantity          | 委托数量                                     |
+| quantityRemaining | 剩余数量                                     |
+| amount            | 委托金额                                     |
+| amountRemaining   | 剩余金额                                     |
+| fee               | 手续费（以detail交易明细中的手续费为准）                  |
+| feeCurrency       | 交易手续费币种                                  |
+| symbol            | 交易对                                      |
+| utcUpdate         | 最后成交时间戳(毫秒级)                             |
+| utcCreate         | 委托时间戳(毫秒级)                               |
+| detail            | 交易明细                                     |
+| matchType         | 匹配类型：PASSIVE-被动匹配，ACTIVE-主动匹配            |
+| dealNo            | 交易单号                                     |
+| volume            | 成交数量                                     |
+| price             | 交易价格                                     |
+| utcDeal           | 交易时间戳(毫秒级)                               |
+
+
+## 查询个人历史成交列表
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "symbol":"ETC/BTC",                   
+            "utcStart":"1536818874583",          
+            "withTrade":"true"         
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp": "1500000000",
+            "result":[ 
+                        {
+                          "dealNo":"12312312312312",   
+                          "symbol": "BTC/USD",        
+                          "matchType":"PASSIVE",       
+                          "orderNo":"32423412412",      
+                          "orderType":"MKT",           
+                          "action":"SELL",              
+                          "price": "0.00213640",      
+                          "volume": "0.42220000",     
+                          "utcDeal": "123123412",    
+                          "fee":"0.01",				  
+                          "feeCurrency":"USD"		   
+                        }
+                    ]
+            }
+}
+```
+
+请求个人历史成交列表
+
+### 请求路径
+
+`/api/v1/order/tradeHistory`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名         | 填写类型 | 描述                                       |
+| ----------- | ---- | ---------------------------------------- |
+| utcStart    | 必填   | 查询开始时间(查询下单时间≥该时间的委托单，毫秒时间戳)             |
+| symbol      | 非必填  | 交易对                                      |
+| utcEnd      | 非必填  | 查询结束时间(查询下单时间≤该时间的委托单，毫秒时间戳)             |
+| startDealNo | 非必填  | 起始交易单号（查询结果中不包含该单号的数据，不传则表示查第一页数据）       |
+| size        | 非必填  | 查询条数（若最后一条数据和第size+1条数据的dealNo相同，则会将第size+1条数据一起返回，此时返回结果条数为size+1） |
+
+### 响应参数
+
+| 字段名         | 描述                            |
+| ----------- | ----------------------------- |
+| timestamp   | 时间戳(毫秒数)                      |
+| result      | 返回结果                          |
+| orderNo     | 委托单号                          |
+| action      | 买卖类型 SELL-卖，BUY-买             |
+| orderType   | 委托单类型 MKT-市价，LMT-限价           |
+| symbol      | 交易对                           |
+| matchType   | 匹配类型：PASSIVE-被动匹配，ACTIVE-主动匹配 |
+| dealNo      | 交易单号                          |
+| volume      | 成交数量                          |
+| price       | 交易价格                          |
+| fee         | 交易手续费                         |
+| feeCurrency | 交易手续费币种                       |
+| utcDeal     | 交易时间戳(毫秒级)                    |
