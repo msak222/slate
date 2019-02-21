@@ -306,5 +306,219 @@ available | 可用余额
 | orderNo   | 委托单号       |
 
 
+## 取消委托
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "orderNo":"12341235123412"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":{
+                        "operate":"success"
+                     }
+            }
+}
+```
+
+用户取消委托单。
+
+### 请求路径
+
+`/api/v1/order/cancel`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名     | 填写类型 | 描述       |
+| ------- | ---- | -------- |
+| orderNo | 必填   | 要取消的委托单号 |
+
+### 响应参数
+
+| 字段名       | 描述                           |
+| --------- | ---------------------------- |
+| timestamp | 系统时间戳(毫秒数)                   |
+| result    | 返回结果                         |
+| operate   | 操作结果 : success-成功，failure-失败 |
 
 
+## 批量取消委托
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "orderNoList":"1612930403329875969,1612930403329875970"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":{
+                        "failResultList": [
+                            {
+                                "errMsg": "orderNo is invalid",
+                                "orderNo": "1612930403329875969"
+                            }
+                        ],
+                        "successNoList": ["1612930403329875970"]
+                     }
+            }
+}
+```
+
+用户批量取消委托单。
+
+### 请求路径
+
+`/api/v1/order/batchCancel`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名     | 填写类型 | 描述       |
+| ------- | ---- | -------- |
+| orderNoList | 必填   | 要取消的委托单号|
+
+### 响应参数
+
+| 字段名       | 描述                           |
+| --------- | ---------------------------- |
+| timestamp | 系统时间戳(毫秒数)                   |
+| result    | 返回结果                         |
+| operate   | 操作结果 : success-成功，failure-失败 |
+
+
+## 查询委托单状态(根据委托单号)
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "orderNoList":"1612930403329875969,1612930403329875970"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":1500000000123,
+            "result":[ 
+                        {
+                            "orderNo":"1612930403329875969",                 
+                            "action":"SELL",                     
+                            "orderType":"MKT",                  
+                            "priceLimit":"0.00000000",           
+                            "symbol":"ETC/BTC",                  
+                            "quantity" :"0.00010000",            
+                            "quantityRemaining":"0.00010000",    
+                            "amount":"0.00000000",               
+                            "amountRemaining":"0.00000000",      
+                            "fee":"0.00000000",                  
+                            "utcUpdate":"1500000000000",         
+                            "utcCreate":"1500000000000",         
+                            "state":"CANCEL"                  
+                        },
+                        {
+                            "orderNo":"1612930403329875970",                 
+                            "action":"SELL",                     
+                            "orderType":"MKT",                  
+                            "priceLimit":"0.00000000",           
+                            "symbol":"ETC/BTC",                  
+                            "quantity" :"0.00010000",            
+                            "quantityRemaining":"0.00010000",    
+                            "amount":"0.00000000",               
+                            "amountRemaining":"0.00000000",      
+                            "fee":"0.00000000",                  
+                            "utcUpdate":"1500000000000",         
+                            "utcCreate":"1500000000000",         
+                            "state":"CANCEL"                  
+                        }
+                    ]
+            }
+}
+```
+
+获取用户委托单状态(单次查询最大限50条记录)。用户可以传入委托单号来获取相对应的委托单状态列表。
+
+### 请求路径
+
+`/api/v1/order/list`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名         | 填写类型 | 描述                                       |
+| ----------- | ---- | ---------------------------------------- |
+| orderNoList | 必填   | 要查询的委托单号列表(将委托单号拼接为字符串，中间用逗号分隔开)单次最大查询单号为50条 |
+
+### 响应参数
+
+| 字段名               | 描述                                       |
+| ----------------- | ---------------------------------------- |
+| timestamp         | 时间戳(毫秒数)                                 |
+| result            | 返回结果                                     |
+| orderNo           | 委托单号                                     |
+| action            | 买卖类型 SELL-卖，BUY-买                        |
+| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
+| priceLimit        | 委托价格                                     |
+| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销，PROCESSING：处理中 |
+| quantity          | 委托数量                                     |
+| quantityRemaining | 剩余数量                                     |
+| amount            | 委托金额                                     |
+| amountRemaining   | 剩余金额                                     |
+| fee               | 手续费                                      |
+| symbol            | 交易对                                      |
+| utcUpdate         | 最后成交时间戳(毫秒级)                             |
+| utcCreate         | 委托时间戳(毫秒级)                               |
