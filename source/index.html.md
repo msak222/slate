@@ -2,7 +2,7 @@
 title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-
+      ```java
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
   - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
@@ -13,7 +13,7 @@ includes:
 search: true
 ---
 
-# Introduction
+# 介绍
 
 Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
 
@@ -21,7 +21,7 @@ We have language bindings in Shell, Ruby, Python, and JavaScript! You can view c
 
 This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
 
-# Authentication
+# 认证
 
 > To authorize, use this code:
 
@@ -61,9 +61,9 @@ Kittn expects for the API key to be included in all API requests to the server i
 You must replace <code>meowmeowmeow</code> with your personal API key.
 </aside>
 
-# Kittens
+# 用户资产查询管理
 
-## Get All Kittens
+## 获取个人资产信息
 
 ```ruby
 require 'kittn'
@@ -91,34 +91,46 @@ let api = kittn.authorize('meowmeowmeow');
 let kittens = api.kittens.get();
 ```
 
-> The above command returns JSON structured like this:
+> 返回示例:
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+
+            "timestamp":"1500000000000",
+            "result":{
+                        "userNo":"12345",
+                        "email":"demouser@demo.domain",
+                        "asset":{
+                                "USD":
+                                    {
+                                        "total":"123",
+                                        "available": "12"
+                                    },
+                                "BTC": 
+                                    {
+                                        "total":"1234",
+                                        "available": "123"
+                                    }
+                             }
+                    }
+            }
+}
 ```
 
-This endpoint retrieves all kittens.
+获取用户个人资产详细信息。
 
-### HTTP Request
+### 请求路径
 
-`GET http://example.com/api/kittens`
+`/api/v1/asset/userAssetInfo`
 
-### Query Parameters
+### 请求方式
+
+`POST`
+
+### 接口请求参数
 
 Parameter | Default | Description
 --------- | ------- | -----------
