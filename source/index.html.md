@@ -1,5 +1,5 @@
 ---
-title: API Reference
+title: Coinsuper Premium API Documentation
 
 language_tabs: # must be one of https://git.io/vQNgJ
 toc_footers:
@@ -100,72 +100,6 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 5.当前支持symbol，请通过[可交易的交易对列表]接口查询；
 
-# 委托和交易
-
-## 买入委托
-
-> 请求示例:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-        "orderType":"LMT",
-        "symbol":"ETC/BTC",
-        "priceLimit":"12345.67", 
-        "amount":"0",
-        "quantity":"2.34"
-    }
-}
-```
-
-> 返回示例:
-
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":{
-                        "orderNo":"2134123412" 
-                     }
-            }
-}
-```
-
-用户委托买入(挂单)。
-
-### 请求路径
-
-`/api/v1/order/buy`
-
-### 请求方式
-
-`POST`
-
-### 请求参数
-
-| 字段名        | 填写类型 | 描述                  |
-| ---------- | ---- | ------------------- |
-| symbol     | 必填   | 交易对                 |
-| priceLimit | 必填   | 买入价格(字符串类型)         |
-| orderType  | 必填   | 委托单类型 MKT-市价，LMT-限价 |
-| quantity   | 必填   | 买入数量(字符串类型)         |
-| amount     | 必填   | 金额(字符串类型)           |  
-
-### 响应参数
-
-| 字段名       | 描述         |
-| --------- | ---------- |
-| timestamp | 系统时间戳(毫秒数) |
-| result    | 返回结果       |
-| orderNo   | 委托单号       |     
-
 
 # 用户资产查询管理
 
@@ -239,6 +173,137 @@ timestamp | 系统时间戳(毫秒数)
 result    | 返回结果       
 total     | 总余额        
 available | 可用余额       
+
+# 委托和交易
+
+## 买入委托
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+        "orderType":"LMT",
+        "symbol":"ETC/BTC",
+        "priceLimit":"12345.67", 
+        "amount":"0",
+        "quantity":"2.34"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":{
+                        "orderNo":"2134123412" 
+                     }
+            }
+}
+```
+
+用户委托买入(挂单)。
+
+### 请求路径
+
+`/api/v1/order/buy`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名        | 填写类型 | 描述                  |
+| ---------- | ---- | ------------------- |
+| symbol     | 必填   | 交易对                 |
+| priceLimit | 必填   | 买入价格(字符串类型)         |
+| orderType  | 必填   | 委托单类型 MKT-市价，LMT-限价 |
+| quantity   | 必填   | 买入数量(字符串类型)         |
+| amount     | 必填   | 金额(字符串类型)           |  
+
+### 响应参数
+
+| 字段名       | 描述         |
+| --------- | ---------- |
+| timestamp | 系统时间戳(毫秒数) |
+| result    | 返回结果       |
+| orderNo   | 委托单号       |     
+
+
+## 卖出委托
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+            "orderType":"LMT",
+            "symbol":"ETC/BTC",
+            "priceLimit":"12345.67", 
+            "amount":"0",
+            "quantity":"2.34"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":{
+                        "orderNo":"2134123412"
+                     }
+           }
+}
+```
+
+用户委托卖出(挂单)。
+
+### 请求路径
+
+`/api/v1/order/sell`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名        | 填写类型 | 描述                  |
+| ---------- | ---- | ------------------- |
+| symbol     | 必填   | 交易对                 |
+| priceLimit | 必填   | 卖出价格(字符串类型)         |
+| orderType  | 必填   | 委托单类型：MKT-市价，LMT-限价 |
+| quantity   | 必填   | 卖出数量(字符串类型)         |
+| amount     | 必填   | 金额(字符串类型)           |
+
+### 响应参数
+
+| 字段名       | 描述         |
+| --------- | ---------- |
+| timestamp | 系统时间戳(毫秒数) |
+| result    | 返回结果       |
+| orderNo   | 委托单号       |
 
 
 
