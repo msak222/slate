@@ -101,6 +101,89 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 5.当前支持symbol，请通过[可交易的交易对列表]接口查询；
 
 
+# 开通API
+
+##签名描述
+
+交易所将对请求数据的内容进行验签，以确定携带的信息是否未经篡改，因此定义生成 sign 字符串的方法。
+
+a. 将所有传入的业务参数同公钥(accesskey)、秘钥(secretkey)一起按照参数名的ASCII码从小到大排序（字母序）
+排序，使用URL键值对的格式（即key1=value1&key2=value2…）拼接成原始字符串string。
+注意：值为空的参数不参与签名;
+
+b. 对string进行md5运算，最终得到32位小写的sign值XXXXXXXXXX...;
+
+##签名生成方法示例
+
+假设有一个调用请求，
+
+业务参数如下：
+symbol : BTC/USD
+num    : 50
+
+公共请求参数如下:
+accesskey : zhangsan
+secretkey : zhangsan
+timestamp : 1500000000000
+
+i：经过 a 过程排序后的字符串 string 为：
+accesskey=zhangsan&num=50&secretkey=zhangsan&symbol=BTC/USD&timestamp=1500000000000
+
+ii：经过 b 过程后得到 sign 为 :
+signValue = md5(string);
+
+完整请求数据格式 :
+
+{	
+  "common":{	
+    "accesskey":"zhangsan",
+    "sign":"acd1761b47fb5d65c1ef9e644adba4fc",
+    "timestamp":"1500000000000"
+  },
+  "data":{
+    "symbol":"BTC/USD",
+    "num"   :"50"
+  }
+}
+
+##全局通用状态码
+
+| 状态码  | 状态描述                                     |
+| ---- | ---------------------------------------- |
+| 1000 | success                                  |
+| 1001 | asynchronous success                     |
+| 2000 | system upgrading                         |
+| 2001 | system internal error                    |
+| 2002 | interface is unavailability              |
+| 2003 | request is too frequently                |
+| 2004 | fail to check sign                       |
+| 2005 | parameter is invalid                     |
+| 2006 | request failure                          |
+| 2007 | accesskey has been forbidden             |
+| 2008 | user not exist                           |
+| 3001 | account balance is not enough            |
+| 3002 | orderNo is not exist                     |
+| 3003 | price is invalid                         |
+| 3004 | symbol is invalid                        |
+| 3005 | quantity is invalid                      |
+| 3006 | ordertype is invalid                     |
+| 3007 | action is invalid                        |
+| 3008 | state is invalid                         |
+| 3009 | num is invalid                           |
+| 3010 | amount is invalid                        |
+| 3011 | cancel order failure                     |
+| 3012 | create order failure                     |
+| 3013 | orderList is invalid                     |
+| 3014 | symbol not trading                       |
+| 3015 | order amount or quantity less than min setting |
+| 3016 | price greater than max setting           |
+| 3017 | user account forbidden                   |
+| 3018 | order has execute                        |
+| 3019 | orderNo num is more than the max setting |
+| 3020 | price out of range                       |
+| 3021 | order has canceled                       |
+| 3027 | this symbol's API trading channel is not available |
+
 # 用户资产查询管理
 
 ## 获取个人资产信息
