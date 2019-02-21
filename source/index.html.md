@@ -100,6 +100,73 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 5.当前支持symbol，请通过[可交易的交易对列表]接口查询；
 
+# 委托和交易
+
+## 买入委托
+
+> 请求示例:
+
+```json
+{
+    "common":{
+        "accesskey" : "1900000109",           
+        "timestamp": "1500000000000",            
+        "sign":"sdfsdfa1231231sdfsdfsd"        
+    },
+    "data":{
+        "orderType":"LMT",
+        "symbol":"ETC/BTC",
+        "priceLimit":"12345.67", 
+        "amount":"0",
+        "quantity":"2.34"
+    }
+}
+```
+
+> 返回示例:
+
+```json
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+            "timestamp":"1500000000000",
+            "result":{
+                        "orderNo":"2134123412" 
+                     }
+            }
+}
+```
+
+用户委托买入(挂单)。
+
+### 请求路径
+
+`/api/v1/order/buy`
+
+### 请求方式
+
+`POST`
+
+### 请求参数
+
+| 字段名        | 填写类型 | 描述                  |
+| ---------- | ---- | ------------------- |
+| symbol     | 必填   | 交易对                 |
+| priceLimit | 必填   | 买入价格(字符串类型)         |
+| orderType  | 必填   | 委托单类型 MKT-市价，LMT-限价 |
+| quantity   | 必填   | 买入数量(字符串类型)         |
+| amount     | 必填   | 金额(字符串类型)           |  
+
+### 响应参数
+
+| 字段名       | 描述         |
+| --------- | ---------- |
+| timestamp | 系统时间戳(毫秒数) |
+| result    | 返回结果       |
+| orderNo   | 委托单号       |     
+
+
 # 用户资产查询管理
 
 ## 获取个人资产信息
@@ -174,189 +241,5 @@ total     | 总余额
 available | 可用余额       
 
 
-## Get a Specific Kitten
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
-```
-
-This endpoint deletes a specific kitten.
-
-### HTTP Request
-
-`DELETE http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
-
-#### 1.用户资产查询管理
-
-##### 1.1 获取个人资产信息
-
-功能描述: 
-
-获取用户个人资产详细信息
-
-请求路径:
-
-```
-/api/v1/asset/userAssetInfo
-```
-
-请求方式:
-
-```
-POST
-```
-
-接口请求参数:
-
- 使用公有参数
-
-响应参数:
-
-| 字段名       | 描述         |
-| --------- | ---------- |
-| userNo    | 用户的编号      |
-| email     | 用户邮箱       |
-| timestamp | 系统时间戳(毫秒数) |
-| result    | 返回结果       |
-| total     | 总余额        |
-| available | 可用余额       |
-
-请求示例：  
-
-```
-{
-    "common":{
-        "accesskey" : "1900000109",            // 通行证
-        "timestamp": "1500000000000",            // 时间戳
-        "sign":"sdfsdfa1231231sdfsdfsd"        // MD5加密签名
-    },
-    "data":{
-
-    }
-}
-```
-
-  返回示例: 
-
-```
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-
-            "timestamp":"1500000000000",
-            "result":{
-                        "userNo":"12345",
-                        "email":"demouser@demo.domain",
-                        "asset"{
-                                "USD":
-                                    {
-                                        "total":"123",
-                                        "available": "12"
-                                    },
-                                "BTC": 
-                                    {
-                                        "total":"1234",
-                                        "available": "123"
-                                    }
-                                ...
-                             }
-                    }
-            }
-}
-```
-
-------
 
