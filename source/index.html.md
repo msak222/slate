@@ -23,12 +23,42 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 ##接口访问前缀
 
-接口访问前缀：https://api.coinsuper.com
+- 接口访问前缀：<aside class="notice">https://api.coinsuper.com</aside>
 
-接口链接请求示例(获取个人资产信息链接)：https://api.coinsuper.com/api/v1/asset/userAssetInfo
+- 接口链接请求示例(获取个人资产信息链接)：
+  <aside class="notice">https://api.coinsuper.com/api/v1/asset/userAssetInfo</aside>
 
 ##接口规则
 
+- 采用HTTPS方式访问
+- 接口请求均采用 POST 协议
+- 接口统一请求数据为 JSON 格式
+- 接口统一返回数据为 JSON 格式
+- 当某一字段无数据时，该字段不返回数据（若返回类型为数组，则会返回空数组）
+- 接口调用参数需加密验签，具体规则及秘钥对由交易所提供
+- 所有POST请求接口header中都需要指定Content-Type=application/json
+
+##全局数据格式定义
+
+```
+1. 参数说明：
+   1.1请求参数：
+   请求参数主要分为两部分，common和data，common和data每次必传。其中common为公有参数，该项每次调用接口
+时必传，且common中的子项accesskey、sign、timestamp也为必传项；data项为每个接口的私有业务参数，其中的
+子项根据每个接口可能会有不同，若data子项为空，data这个大项也必传。
+   1.2响应参数：
+   响应参数code、msg每次必回传，请求业务处理成功后，code返回"1000"，返回其它值则表明业务请求有异常，具
+体异常说明请参考下方的【全局通用状态码】表。
+2. 业务参数精度：
+   2.1若symbol为币币交易，则价格精度为小数点后8位，数量参数表示精度为4位；
+   2.2若symbol为法币交易，则价格精度为小数点后2位，数量参数表示精度为4位；
+   2.3在请求参数中，若参数格式不符合要求，系统将根据自行统一精度。
+3. 签名:
+   所有请求均需要按本文档中的签名规则传递参数签名，签名生成规则请参考下方的参数签名规范；
+4. 时间戳:
+   接口中所有timestamp字符串必须使用UTC时间(格式化时指定时区为0时区)，时间毫秒均采用原子时；
+5. 当前支持symbol，请通过[可交易的交易对列表]接口查询；
+```
 
 # 用户资产查询管理
 
