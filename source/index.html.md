@@ -40,7 +40,7 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 
 ##全局数据格式定义
 
-```
+
 1. 参数说明：
    1.1请求参数：
    请求参数主要分为两部分，common和data，common和data每次必传。其中common为公有参数，该项每次调用接口
@@ -58,7 +58,7 @@ Coinsuper Premium API是一套高性能RESTful JSON端点，专门用于满足�
 4. 时间戳:
    接口中所有timestamp字符串必须使用UTC时间(格式化时指定时区为0时区)，时间毫秒均采用原子时；
 5. 当前支持symbol，请通过[可交易的交易对列表]接口查询；
-```
+
 
 # 用户资产查询管理
 
