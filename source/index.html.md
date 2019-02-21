@@ -233,3 +233,85 @@ Parameter | Description
 --------- | -----------
 ID | The ID of the kitten to delete
 
+#### 1.用户资产查询管理
+
+##### 1.1 获取个人资产信息
+
+功能描述: 
+
+获取用户个人资产详细信息
+
+请求路径:
+
+```
+/api/v1/asset/userAssetInfo
+```
+
+请求方式:
+
+```
+POST
+```
+
+接口请求参数:
+
+ 使用公有参数
+
+响应参数:
+
+| 字段名       | 描述         |
+| --------- | ---------- |
+| userNo    | 用户的编号      |
+| email     | 用户邮箱       |
+| timestamp | 系统时间戳(毫秒数) |
+| result    | 返回结果       |
+| total     | 总余额        |
+| available | 可用余额       |
+
+请求示例：  
+
+```
+{
+    "common":{
+        "accesskey" : "1900000109",            // 通行证
+        "timestamp": "1500000000000",            // 时间戳
+        "sign":"sdfsdfa1231231sdfsdfsd"        // MD5加密签名
+    },
+    "data":{
+
+    }
+}
+```
+
+  返回示例: 
+
+```
+{
+    "code":"1000",
+    "msg":"success",
+    "data":{
+
+            "timestamp":"1500000000000",
+            "result":{
+                        "userNo":"12345",
+                        "email":"demouser@demo.domain",
+                        "asset"{
+                                "USD":
+                                    {
+                                        "total":"123",
+                                        "available": "12"
+                                    },
+                                "BTC": 
+                                    {
+                                        "total":"1234",
+                                        "available": "123"
+                                    }
+                                ...
+                             }
+                    }
+            }
+}
+```
+
+------
+
