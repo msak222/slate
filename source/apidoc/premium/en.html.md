@@ -19,10 +19,10 @@ Coinsuper  API iis an interface provided by Coinsuper for external developers.
 
 ##API Request URI Prefix
 
-- API Request URI Prefix：<aside class="notice">https://api.coinsuper.com</aside>
+- API Request URI Prefix：<aside class="notice">https://api-fix-premium.coinsuper.com</aside>
 
 - API Request URI example(Personal Asset Information)：
-  <aside class="notice">https://api.coinsuper.com/api/v1/asset/userAssetInfo</aside>
+  <aside class="notice">https://api-fix-premium.coinsuper.com/api/v1/asset/userAssetInfo</aside>
 
 ##API Specifications
 
