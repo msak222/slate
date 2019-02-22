@@ -13,109 +13,116 @@ search: true
 
 # Introduce
 
-Coinsuper  API is a high-performance RESTful JSON endpoint dedicated to meeting the critical mission needs of application developers, data scientists and enterprise business platforms.
- 
-This API reference includes all the technical documentation that developers need to integrate third-party applications and platforms.
+Coinsuper  API iis an interface provided by Coinsuper for external developers.
 
-# Global Rule
+# General Information
 
-##Interface access prefix
+##API Request URI Prefix
 
-- 接口访问前缀：<aside class="notice">https://api.coinsuper.com</aside>
+- API Request URI Prefix：<aside class="notice">https://api.coinsuper.com</aside>
 
-- 接口链接请求示例(获取个人资产信息链接)：
+- API Request URI example(Personal Asset Information)：
   <aside class="notice">https://api.coinsuper.com/api/v1/asset/userAssetInfo</aside>
 
-##接口规则
+##API Specifications
 
-- 采用HTTPS方式访问
-- 接口请求均采用 POST 协议
-- 接口统一请求数据为 JSON 格式
-- 接口统一返回数据为 JSON 格式
-- 当某一字段无数据时，该字段不返回数据（若返回类型为数组，则会返回空数组）
-- 接口调用参数需加密验签，具体规则及秘钥对由交易所提供
-- 所有POST请求接口header中都需要指定Content-Type=application/json
+- Access using HTTPS.
+- All API requests are made as REST POST requests.
+- Bodies of POST requests should be formatted as JSON.
+- Return values will be formatted in JSON.
+- Interfacing with our API requires encryption. This will be described in detail below.
+- All POST headers must specify Content-Type=application/json
 
-##全局数据格式定义
+##POST Body Format
 
-> 请求数据JSON格式定义
+> Sample JSON POST Body
 
 ```
 {
     "common":{
-        "accesskey" : "1900000109",            // 通行证
-        "sign":"sdfsdfa1231231sdfsdfsd"        // MD5加密签名
-        "timestamp":"1500000000000",        //UTC时间戳(毫秒数)
+        "accesskey" : "1900000109",            // Personal Accesskey
+        "sign":"sdfsdfa1231231sdfsdfsd"        // MD5 Encrypted Secret Key
+        "timestamp":"1500000000000",        //UTC Time (Milliseconds)
     },
     "data":{
-        ......                                //请求业务数据
+        ......                                //Data Specific to Request
     }
 }
 
 ```
 
-> 响应数据JSON格式定义
+> Sample JSON Response
 
 ```
 {
-        "code":"1000",    // 状态码
-        "msg":"success",    // 返回信息
+        "code":"1000",    // Status Code
+        "msg":"success",    // Message Corresponding With Status Code
         "data":{
-                    "timestamp":"1500000000000", //系统时间戳(毫秒数)
+                    "timestamp":"1500000000000", //System UTC Time (Milliseconds)
                     "result":{
                                 ....
-                             }                  //系统返回结果
+                             }                  //Returned Data Specific to Request
                 ..... 
-               }    // 返回数据
+               }    // Return Data
 }
 ```
 
-1.参数说明：
+1.Parameter Descriptions：
 
-    1.1 请求参数：
-   请求参数主要分为两部分，common和data，common和data每次必传。其中common为公有参数，该项每次调用接口
-时必传，且common中的子项accesskey、sign、timestamp也为必传项；data项为每个接口的私有业务参数，其中的
-子项根据每个接口可能会有不同，若data子项为空，data这个大项也必传。
+    1.1 Request Parameters：
+    
+   Request parameters can be split into the "common" and "data" categories. Every request from 
+   a user needs the same "common" parameters to be transmitted. These "common" parameters include 
+   the "accesskey", "sign" and "timestamp". The "data" category will be specific to the type of 
+   request being made. The "data" field must always be included in the JSON, even if it is left 
+   empty for that type of request.
    
-    1.2 响应参数：
-   响应参数code、msg每次必回传，请求业务处理成功后，code返回"1000"，返回其它值则表明业务请求有异常，具
-体异常说明请参考下方的【全局通用状态码】表。
+    1.2 Response Parameters：
+    
+   The response parameters "code" and "msg" will be returned every time. After a successful 
+   request, "code" should be equal to "1000". If the code is not "1000", refer to the provided 
+   table to find out what exception has occurred.
 
 2.业务参数精度：
    
-    2.1 若symbol为币币交易，则价格精度为小数点后8位，数量参数表示精度为4位；
+    2.1 For crypto-crypto transactions, the price is accurate to 8 decimal places. quantity is 
+        accuate to 4 decimal places.
    
-    2.2 若symbol为法币交易，则价格精度为小数点后2位，数量参数表示精度为4位；
+    2.2 For crypto-fiat transactions, the price is accurate to 2 decimal places and the quantity 
+        is accurate to 4 decimal places.
    
-    2.3 在请求参数中，若参数格式不符合要求，系统将根据自行统一精度。
+    2.3 The API servers will always use this degree of accuracy, regardless of decimal places of 
+        request inputs in the "data" field.
 
-3.签名:
+3.Signature:
    
-    所有请求均需要按本文档中的签名规则传递参数签名，签名生成规则请参考下方的参数签名规范；
+    All requests must contain a valid signature. The signature generation method is detailed 
+    below.
 
-4.时间戳:
+4.Timestamp:
    
-    接口中所有timestamp字符串必须使用UTC时间(格式化时指定时区为0时区)，时间毫秒均采用原子时；
+    All timestamps recieved or sent must use UTC time, specified down to atomic milliseconds.
 
-5.当前支持symbol，请通过[可交易的交易对列表]接口查询；
-
-
-# 开通API
-
-##签名描述
-
-交易所将对请求数据的内容进行验签，以确定携带的信息是否未经篡改，因此定义生成 sign 字符串的方法。
-
-a. 将所有传入的业务参数同公钥(accesskey)、秘钥(secretkey)一起按照参数名的ASCII码从小到大排序（字母序）
-排序，使用URL键值对的格式（即key1=value1&key2=value2…）拼接成原始字符串string。
-注意：值为空的参数不参与签名;
-
-b. 对string进行md5运算，最终得到32位小写的sign值XXXXXXXXXX...;
-
-##签名生成方法示例
+5.To see which transaction pair symbols are supported, check the interface under section 3.5
 
 
->完整请求数据格式 :
+# Get API Keys
+
+##Signature Generation Method 
+
+Our API requires a signature to be generated, to verify that information has not been tampered 
+with or falsified by bad actors.
+
+a. Sort all request parameters along with "accesskey" and "secretkey" according to the ASCII 
+   code of the parameter key (small to large). Next, express these sorted parameters as a URL key-
+   value pair collection (key1=value1&key2=value2…). This will be the pre-encryption signature string.
+
+b. Apply MD5 encryption to the string. The final 32 bits will become the sign: XXXXXXXXXX...;
+
+##Signature Generation Sample
+
+
+>Complete Request Body  :
 
 ```json
 {	
@@ -131,27 +138,31 @@ b. 对string进行md5运算，最终得到32位小写的sign值XXXXXXXXXX...;
 }
 ```
 
-假设有一个调用请求，
+Let us suppose there is a request with these parameters:
 
-业务参数如下：
+Request Parameters：
 symbol : BTC/USD
 num    : 50
 
-公共请求参数如下:
+Common Request Parameters:
 accesskey : zhangsan
 secretkey : zhangsan
 timestamp : 1500000000000
 
-i：经过 a 过程排序后的字符串 string 为：
+i：The sorted pre-encryption signature string then is：
+
 accesskey=zhangsan&num=50&secretkey=zhangsan&symbol=BTC/USD&timestamp=1500000000000
 
-ii：经过 b 过程后得到 sign 为 :
+ii：Finally, we encrypt the raw signature string and assign it to signValue. This will be the 
+   "sign" for the actual request body
+
 signValue = md5(string);
 
+signValue == acd1761b47fb5d65c1ef9e644adba4fc
 
-##全局通用状态码
+##Status Code Table 
 
-| 状态码  | 状态描述                                     |
+| Code Number | Code Message                      |
 | ---- | ---------------------------------------- |
 | 1000 | success                                  |
 | 1001 | asynchronous success                     |
@@ -187,11 +198,11 @@ signValue = md5(string);
 | 3021 | order has canceled                       |
 | 3027 | this symbol's API trading channel is not available |
 
-# 用户资产查询管理
+# User Asset Queries
 
-## 获取个人资产信息
+## Personal Asset Information
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -206,7 +217,7 @@ signValue = md5(string);
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -235,36 +246,36 @@ signValue = md5(string);
 }
 ```
 
-获取用户个人资产详细信息。
+Obtain your own personal asset information.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/asset/userAssetInfo`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request parameters
 
-    使用公有参数
+    Only common parameters must be included.
 
-### 响应参数
+### Response Parameters
 
-字段名 | 描述
---------- | -----------
-userNo    | 用户的编号
-email     | 用户邮箱 
-timestamp | 系统时间戳(毫秒数) 
-result    | 返回结果       
-total     | 总余额        
-available | 可用余额       
+| Parameter | Description           |
+| --------- | --------------------- |
+| userNo    | User's Account Number |
+| email     | User Email            |
+| timestamp | System Timestamp      |
+| result    | Return Results        |
+| total     | Total Balance         |
+| available | Available Balance     |       
 
-# 委托和交易
+# Transactions
 
-## 买入委托
+## Place a Buy Order
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -283,7 +294,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -298,38 +309,44 @@ available | 可用余额
 }
 ```
 
-用户委托买入(挂单)。
+Place a buy order.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/buy`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名        | 填写类型 | 描述                  |
+| Parameter        | Mandatory | Description                  |
 | ---------- | ---- | ------------------- |
-| symbol     | 必填   | 交易对                 |
-| priceLimit | 必填   | 买入价格(字符串类型)         |
-| orderType  | 必填   | 委托单类型 MKT-市价，LMT-限价 |
-| quantity   | 必填   | 买入数量(字符串类型)         |
-| amount     | 必填   | 金额(字符串类型)           |  
+| symbol     | Yes   Transaction Pair Symbol                  |
+| priceLimit | Yes   Price Limit(String type)                 |
+| orderType  | Yes   Order Type MKT- "Market Price"，LMT- "Limit Price" |
+| quantity   | Yes   Buy Quantity(String type)                |
+| amount     | Yes   Amount(String type)                      |
 
-### 响应参数
+Explanation：
+1. If order type is LMT, the API will use "priceLimit" and "quantity". "amount" should be 
+equal to "0" and will not be used.
+2. If order type is MKT, the API will only use "amount". "priceLimit' and "quantity" should 
+be "0" and will not be used.
 
-| 字段名       | 描述         |
-| --------- | ---------- |
-| timestamp | 系统时间戳(毫秒数) |
-| result    | 返回结果       |
-| orderNo   | 委托单号       |     
+###  Response Parameters
+
+| Parameter | Description     |
+| --------- | --------------- |
+| timestamp | Timestamp       |
+| result    | Results         |
+| orderNo   | Order Number ID |     
 
 
-## 卖出委托
+## Place a Sell Order
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -348,7 +365,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -363,38 +380,40 @@ available | 可用余额
 }
 ```
 
-用户委托卖出(挂单)。
+Place a sell order.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/sell`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名        | 填写类型 | 描述                  |
-| ---------- | ---- | ------------------- |
-| symbol     | 必填   | 交易对                 |
-| priceLimit | 必填   | 卖出价格(字符串类型)         |
-| orderType  | 必填   | 委托单类型：MKT-市价，LMT-限价 |
-| quantity   | 必填   | 卖出数量(字符串类型)         |
-| amount     | 必填   | 金额(字符串类型)           |
-
-### 响应参数
-
-| 字段名       | 描述         |
-| --------- | ---------- |
-| timestamp | 系统时间戳(毫秒数) |
-| result    | 返回结果       |
-| orderNo   | 委托单号       |
+| Parameter  | Mandatory | Description                              |
+| ---------- | --------- | ---------------------------------------- |
+| symbol     | Yes       | Transaction Pair Symbol                  |
+| priceLimit | Yes       | Price Limit(String type)                 |
+| orderType  | Yes       | Order Type MKT- "Market Price"，LMT- "Limit Price" |
+| quantity   | Yes       | Buy Quantity(String type)                |
+| amount     | Yes       | Amount(String type)                      |
 
 
-## 取消委托
+###  Response Parameters
 
-> 请求示例:
+| Parameter | Description     |
+| --------- | --------------- |
+| timestamp | Timestamp       |
+| result    | Results         |
+| orderNo   | Order Number ID |
+
+
+
+## Cancel Order
+
+> Request Sample:
 
 ```json
 {
@@ -409,7 +428,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -424,34 +443,35 @@ available | 可用余额
 }
 ```
 
-用户取消委托单。
+Cancel a previously placed order.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/cancel`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名     | 填写类型 | 描述       |
-| ------- | ---- | -------- |
-| orderNo | 必填   | 要取消的委托单号 |
-
-### 响应参数
-
-| 字段名       | 描述                           |
-| --------- | ---------------------------- |
-| timestamp | 系统时间戳(毫秒数)                   |
-| result    | 返回结果                         |
-| operate   | 操作结果 : success-成功，failure-失败 |
+| Parameter | Mandatory | Description     |
+| --------- | --------- | --------------- |
+| orderNo   | Yes       | Order Number ID |
 
 
-## 批量取消委托
+###  Response Parameters
 
-> 请求示例:
+| Parameter | Description                              |
+| --------- | ---------------------------------------- |
+| timestamp | Timestamp                                |
+| result    | Results                                  |
+| operate   | Result Description : "success" or "failure" |
+
+
+## Batch Cancellation of Orders
+
+> Request Sample:
 
 ```json
 {
@@ -466,7 +486,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -487,34 +507,34 @@ available | 可用余额
 }
 ```
 
-用户批量取消委托单。
+User Cancels Orders
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/batchCancel`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名     | 填写类型 | 描述       |
+| Parameter     | Mandatory | Description       |
 | ------- | ---- | -------- |
-| orderNoList | 必填   | 要取消的委托单号|
+| orderNoList | Yes   | Order Number to Cancel|
 
-### 响应参数
+###  Response Parameters
 
-| 字段名       | 描述                           |
-| --------- | ---------------------------- |
-| timestamp | 系统时间戳(毫秒数)                   |
-| result    | 返回结果                         |
-| operate   | 操作结果 : success-成功，failure-失败 |
+| Parameter | Description                              |
+| --------- | ---------------------------------------- |
+| timestamp | System Timestamp (ms)                    |
+| result    | Return Result                            |
+| operate   | Result Description : "success" or "failure" |
 
 
-## 查询委托单状态(根据委托单号)
+## Return Order List
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -529,7 +549,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -573,46 +593,46 @@ available | 可用余额
 }
 ```
 
-获取用户委托单状态(单次查询最大限50条记录)。用户可以传入委托单号来获取相对应的委托单状态列表。
+Obtain a list of order information (maximum 50 at one time). The user passes in the Order IDs for the orders they wish to check.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/list`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名         | 填写类型 | 描述                                       |
-| ----------- | ---- | ---------------------------------------- |
-| orderNoList | 必填   | 要查询的委托单号列表(将委托单号拼接为字符串，中间用逗号分隔开)单次最大查询单号为50条 |
+| Parameter   | Mandatory | Description                              |
+| ----------- | --------- | ---------------------------------------- |
+| orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名               | 描述                                       |
+| Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
-| timestamp         | 时间戳(毫秒数)                                 |
-| result            | 返回结果                                     |
-| orderNo           | 委托单号                                     |
-| action            | 买卖类型 SELL-卖，BUY-买                        |
-| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
-| priceLimit        | 委托价格                                     |
-| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销，PROCESSING：处理中 |
-| quantity          | 委托数量                                     |
-| quantityRemaining | 剩余数量                                     |
-| amount            | 委托金额                                     |
-| amountRemaining   | 剩余金额                                     |
-| fee               | 手续费                                      |
-| symbol            | 交易对                                      |
-| utcUpdate         | 最后成交时间戳(毫秒级)                             |
-| utcCreate         | 委托时间戳(毫秒级)                               |
+| timestamp         | Timestamp                                |
+| result            | Results                                  |
+| orderNo           | Order Number                             |
+| action            | Order Type (Buy/Sell)                    |
+| orderType         | Order Sub-type MKT-Market Price，LMT-Limit Price |
+| priceLimit        | Price Limit                              |
+| state             | Order Status  UNDEAL:Not Executed，PARTDEAL:Partially Executed，DEAL:Order Complete，CANCEL: Canceled |
+| quantity          | Order Quantity                           |
+| quantityRemaining | Remaining Quantity                       |
+| amount            | Order Amount                             |
+| amountRemaining   | Remaining Amount                         |
+| fee               | Transaction Fee                          |
+| symbol            | Trade Pair                               |
+| utcUpdate         | Timestamp of Last Transaction            |
+| utcCreate         | Timestamp on Order Creation              |
 
 
-## 查询订单交易详情(根据委托单号)
+## Return Detailed Order List
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -627,7 +647,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -703,50 +723,51 @@ available | 可用余额
 }
 ```
 
-获取用户已成交委托单详细交易信息(一次最大查询50条已成交委托单的交易详情信息)
+Returns a list of information for up to 50 Orders. This information is more detailed than 2.4 
+and includes individual transactions related to the order.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/details`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名         | 填写类型 | 描述                               |
-| ----------- | ---- | -------------------------------- |
-| orderNoList | 必填   | 要查询的委托单号列表(将委托单号拼接为字符串，中间用逗号分隔开) |
+| Parameter   | Mandatory | Description                              |
+| ----------- | --------- | ---------------------------------------- |
+| orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名               | 描述                                       |
+| Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
-| timestamp         | 时间戳(毫秒数)                                 |
-| result            | 返回结果                                     |
-| orderNo           | 委托单号                                     |
-| priceLimit        | 委托价格                                     |
-| price             | 交易价格                                     |
-| quantity          | 委托数量                                     |
-| quantityRemaining | 委托剩余数量                                   |
-| amount            | 委托金额                                     |
-| amountRemaining   | 剩余金额                                     |
-| volume            | 成交数量                                     |
-| action            | 买卖类型 SELL-卖，BUY-买                        |
-| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
-| fee               | 交易手续费（以detail交易明细中的手续费为准）                |
-| feeCurrency       | 交易手续费币种                                  |
-| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销，PROCESSING：处理中 |
-| matchType         | 匹配类型：MAKER-被动匹配，TAKER-主动匹配               |
-| symbol            | 交易对                                      |
-| detail            | 交易明细                                     |
-| utcDeal           | 交易时间戳(毫秒级)                               |
+| timestamp         | Timestamp                                |
+| result            | Results                                  |
+| orderNo           | Order Number                             |
+| priceLimit        | Price Limit                              |
+| price             | Transaction Price                        |
+| quantity          | Order Quantity                           |
+| quantityRemaining | Remaining Quantity                       |
+| amount            | Order Amount                             |
+| amountRemaining   | Remaining Amount                         |
+| volume            | Volume of Transaction                    |
+| action            | Order Type (Buy/Sell)                    |
+| orderType         | Order Sub-type MKT-Market Price，LMT-Limit Price |
+| fee               | Transaction Fee                          |
+| feeCurrency       | Transaction Fee Currency                 |
+| state             | Order Status  UNDEAL:Not Executed，PARTDEAL:Partially Executed，DEAL:Order Complete，CANCEL: Canceled |
+| matchType         | Transaction Type：MAKER-Passive Match，TAKER-Active Match |
+| symbol            | Trade Pair                               |
+| detail            | Detailed Transaction Information         |
+| utcDeal           | Timestamp of Transaction                 |
 
 
-## 挂单单号列表(个人未完全成交委托单列表)
+## Pending Order List
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -762,7 +783,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -779,34 +800,34 @@ available | 可用余额
 }
 ```
 
-请求最新挂单单号列表(时间最近的委托单单号列表)
+Obtain a list of pending orders (up to 1000) for a trade pair.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/openList`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名    | 填写类型 | 描述                |
-| ------ | ---- | ----------------- |
-| symbol | 非必填  | 交易对，若不填则查询所有交易对   |
-| num    | 必填   | 请求的单号条数，最大不超过1000 |
+| Parameter | Mandatory | Description                              |
+| --------- | --------- | ---------------------------------------- |
+| symbol    | No        | Trade Pair (Querries all Trade Pairs if unfilled) |
+| num       | Yes       | Number of results to return (Max 1000)   |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名       | 描述       |
-| --------- | -------- |
-| timestamp | 时间戳(毫秒数) |
-| result    | 返回结果     |
+| Parameter | Description                |
+| --------- | -------------------------- |
+| timestamp | Timestamp                  |
+| result    | Results, List of order IDs |
 
 
-## 查询个人历史委托单列表
+## Query Personal Order History
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -823,7 +844,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -873,59 +894,59 @@ available | 可用余额
 }
 ```
 
-请求个人历史委托单列表
+Request Personal Order History
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/history`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名          | 填写类型 | 描述                                      |
-| ------------ | ---- | --------------------------------------- |
-| symbol       | 必填   | 交易对                                     |
-| utcStart     | 必填   | 查询开始时间(查询下单时间≥该时间的委托单，毫秒时间戳)            |
-| utcEnd       | 非必填  | 查询结束时间(查询下单时间≤该时间的委托单，毫秒时间戳)            |
-| startOrderNo | 非必填  | 起始委托单号（查询结果中不含该单号的数据，不传则表示查第一页数据）       |
-| withTrade    | 非必填  | 是否需要返回对应委托单的交易明细（true-返回，false-不返回（小写）） |
-| size         | 非必填  | 查询条数(取值范围暂定为1~100)                      |
+| Parameter    | Mandatory | Description                              |
+| ------------ | --------- | ---------------------------------------- |
+| symbol       | Yes       | Trade Pair                               |
+| utcStart     | Yes       | Query Start Time (≤ order creation time in the results, timestamps in ms) |
+| utcEnd       | NO        | Query End Time ( ≥ order creation time in the results, timestamps in ms) |
+| startOrderNo | NO        | Start Order Number (Its data are excluded from the query results. If it is not passed, the first page of data will be queried. ) |
+| withTrade    | NO        | Return the Transaction Details of Corresponding Orders or Not (true-Return, false-Not Return (in lower case)) |
+| size         | NO        | Number of Results (temporarily limited to 1-100) |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名               | 描述                                       |
+| Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
-| timestamp         | 时间戳(毫秒数)                                 |
-| result            | 返回结果                                     |
-| orderNo           | 委托单号                                     |
-| action            | 买卖类型 SELL-卖，BUY-买                        |
-| orderType         | 委托单类型 MKT-市价，LMT-限价                      |
-| priceLimit        | 委托价格                                     |
-| priceAverage      | 成交均价                                     |
-| state             | 委托单状态  UNDEAL:未成交，PARTDEAL:部分成交，DEAL:完全成交，CANCEL: 已撤销 |
-| quantity          | 委托数量                                     |
-| quantityRemaining | 剩余数量                                     |
-| amount            | 委托金额                                     |
-| amountRemaining   | 剩余金额                                     |
-| fee               | 手续费（以detail交易明细中的手续费为准）                  |
-| feeCurrency       | 交易手续费币种                                  |
-| symbol            | 交易对                                      |
-| utcUpdate         | 最后成交时间戳(毫秒级)                             |
-| utcCreate         | 委托时间戳(毫秒级)                               |
-| detail            | 交易明细                                     |
-| matchType         | 匹配类型：PASSIVE-被动匹配，ACTIVE-主动匹配            |
-| dealNo            | 交易单号                                     |
-| volume            | 成交数量                                     |
-| price             | 交易价格                                     |
-| utcDeal           | 交易时间戳(毫秒级)                               |
+| timestamp         | Timestamp (ms)                           |
+| result            | Return Result                            |
+| orderNo           | Order No.                                |
+| action            | Order Type SELL-Sell/BUY-Buy             |
+| orderType         | Order Sub-type  MKT-Market Price, LMT-Limit Price |
+| priceLimit        | Price Limit                              |
+| priceAverage      | Average Transaction Price                |
+| state             | Order State  UNDEAL: Not Executed，PARTDEAL: Partially Executed，DEAL: Order Complete，CANCEL: Cancelled |
+| quantity          | Order Quantity                           |
+| quantityRemaining | Remaining Quantity                       |
+| amount            | Order Amount                             |
+| amountRemaining   | Remaining Amount                         |
+| fee               | Transaction Fee                          |
+| feeCurrency       | Transaction Fee Currency                 |
+| symbol            | Trade Pair                               |
+| utcUpdate         | Timestamp of Last Transaction (ms)       |
+| utcCreate         | Timestamp on Order Creation (ms)         |
+| detail            | Transaction Details                      |
+| matchType         | Transaction Type: PASSIVE-Passive Match，ACTIVE-Active Match |
+| dealNo            | Transaction Number                       |
+| volume            | Transaction Volume                       |
+| price             | Transaction Price                        |
+| utcDeal           | Transaction Timestamp (ms)               |
 
 
-## 查询个人历史成交列表
+## Query Personal Trade History
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -942,7 +963,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -969,50 +990,50 @@ available | 可用余额
 }
 ```
 
-请求个人历史成交列表
+Request Personal Trade History
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/order/tradeHistory`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名         | 填写类型 | 描述                                       |
-| ----------- | ---- | ---------------------------------------- |
-| utcStart    | 必填   | 查询开始时间(查询下单时间≥该时间的委托单，毫秒时间戳)             |
-| symbol      | 非必填  | 交易对                                      |
-| utcEnd      | 非必填  | 查询结束时间(查询下单时间≤该时间的委托单，毫秒时间戳)             |
-| startDealNo | 非必填  | 起始交易单号（查询结果中不包含该单号的数据，不传则表示查第一页数据）       |
-| size        | 非必填  | 查询条数（若最后一条数据和第size+1条数据的dealNo相同，则会将第size+1条数据一起返回，此时返回结果条数为size+1） |
+| FieldName   | Mandatory | Description                              |
+| ----------- | --------- | ---------------------------------------- |
+| utcStart    | Yes       | Query Start Time (≤ order creation time in the results, timestamps in ms) |
+| symbol      | NO        | Trade Pair                               |
+| utcEnd      | NO        | Query End Time ( ≥ order creation time in the results, timestamps in ms) |
+| startDealNo | NO        | Start Transaction Number (Its data are excluded from the query results. If it is not passed, the first page of data will be queried.) |
+| size        | NO        | Number of Results (When the last result has the same order number as the size+1 result, return the size+1 result and show size+1 results) |
+###  Response Parameters
 
-### 响应参数
-
-| 字段名         | 描述                            |
-| ----------- | ----------------------------- |
-| timestamp   | 时间戳(毫秒数)                      |
-| result      | 返回结果                          |
-| orderNo     | 委托单号                          |
-| action      | 买卖类型 SELL-卖，BUY-买             |
-| orderType   | 委托单类型 MKT-市价，LMT-限价           |
-| symbol      | 交易对                           |
-| matchType   | 匹配类型：PASSIVE-被动匹配，ACTIVE-主动匹配 |
-| dealNo      | 交易单号                          |
-| volume      | 成交数量                          |
-| price       | 交易价格                          |
-| fee         | 交易手续费                         |
-| feeCurrency | 交易手续费币种                       |
-| utcDeal     | 交易时间戳(毫秒级)                    |
+| Parameter   | Description                              |
+| ----------- | ---------------------------------------- |
+| timestamp   | Timestamp (ms)                           |
+| result      | Return Result                            |
+| orderNo     | Order Number                             |
+| action      | Order Type SELL-Sell/BUY-Buy             |
+| orderType   | Order Sub-type  MKT-Market Price, LMT-Limit Price |
+| symbol      | Trade Pair                               |
+| matchType   | Transaction Type: PASSIVE-Passive Match，ACTIVE-Active Match |
+| dealNo      | Transaction Number                       |
+| volume      | Transaction Volume                       |
+| price       | Transaction Price                        |
+| fee         | Transaction Fee                          |
+| feeCurrency | Transaction Fee Currency                 |
+| utcDeal     | Transaction Timestamp (ms)               |
 
 
-#行情
 
-## 深度行情(最新深度图数据)
+#Quotes
 
-> 请求示例:
+## Detailed Market Quote (10%)
+
+> Request Sample:
 
 ```json
 {
@@ -1027,7 +1048,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -1053,37 +1074,37 @@ available | 可用余额
 }
 ```
 
-获取当前深度图行情数据，深度比例为百分之十
+Obtain top 10% bids and asks for a trade pair.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/market/depth`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名    | 填写类型 | 描述   |
-| ------ | ---- | ---- |
-| symbol | 必填   | 交易对  |
+| Parameter | Mandatory | Description |
+| --------- | --------- | ----------- |
+| symbol    | Yes       | Trade Pair  |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名        | 描述       |
-| ---------- | -------- |
-| timestamp  | 时间戳(毫秒数) |
-| result     | 返回结果     |
-| asks       | 卖盘深度数据   |
-| bids       | 买盘深度数据   |
-| limitPrice | 委托价格     |
-| quantity   | 数量       |
+| Parameter  | Description       |
+| ---------- | ----------------- |
+| timestamp  | Timestamp         |
+| result     | Results           |
+| asks       | Ask Offers        |
+| bids       | Bid Offers        |
+| limitPrice | Price Limit       |
+| quantity   | Quantity on Offer |
 
 
-## 价格行情(最新订单簿数据)
+## Detailed Market Quote (1-50)
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -1099,7 +1120,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -1115,38 +1136,38 @@ available | 可用余额
 }
 ```
 
-获取当前订单簿行情数据(最大买卖盘各请求1-50条记录)
+Return top 1-50 asks and bids for a trade pair.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/market/orderBook`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名    | 填写类型 | 描述   |
-| ------ | ---- | ---- |
-| num    | 必填   | 数量   |
-| symbol | 必填   | 交易对  |
+| Parameter | Mandatory | Description                 |
+| --------- | --------- | --------------------------- |
+| num       | Yes       | Number of results to return |
+| symbol    | Yes       | Trade Pair                  |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名        | 描述                                   |
-| ---------- | ------------------------------------ |
-| timestamp  | 时间戳(毫秒数)                             |
-| result     | 返回结果                                 |
-| asks       | 卖盘深度数据                               |
-| bids       | 买盘深度数据                               |
-| limitPrice | 委托价格,注：币币交易对精度为小数点后8位，法币交易对精度为小数点后两位 |
-| quantity   | 数量,注:精度为4位小数                         |
+| Parameter  | Description       |
+| ---------- | ----------------- |
+| timestamp  | Timestamp         |
+| result     | Results           |
+| asks       | Ask Offers        |
+| bids       | Bid Offers        |
+| limitPrice | Price Limit       |
+| quantity   | Quantity on Offer |
 
 
-## 分时行情(最新K线数据)
+## Real Time Price Quotes
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -1162,7 +1183,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -1192,40 +1213,40 @@ available | 可用余额
 }
 ```
 
-获取5分钟K线行情数据(1-300条数据)
+Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points in 5 minute increments.)
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/market/kline`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名    | 填写类型 | 描述                                       |
-| ------ | ---- | ---------------------------------------- |
-| symbol | 必填   | 交易对                                      |
-| num    | 必填   | 条数最大300条                                 |
-| range  | 非必填  | K线类型(可选值:5min,15min,30min,1hour,6hour,12hour,1day),不传时默认值为5min |
+| Parameter | Mandatory | Description                              |
+| --------- | --------- | ---------------------------------------- |
+| symbol    | Yes       | Trade Pair                               |
+| num       | Yes       | Data Point Count                         |
+| range     | No        | Kline range(available values:5min,15min,30min,1hour,6hour,12hour,1day),default value:5min |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名       | 描述       |
-| --------- | -------- |
-| timestamp | 时间戳(毫秒数) |
-| result    | 返回结果     |
-| volume    | 交易量      |
-| high      | 最高价      |
-| low       | 最低价      |
-| open      | 开盘价      |
-| close     | 收盘价      |
+| Parameter | Description   |
+| --------- | ------------- |
+| timestamp | Timestamp     |
+| result    | Results       |
+| volume    | Volume Traded |
+| high      | Highest Price |
+| low       | Lowest Price  |
+| open      | Opening Price |
+| close     | Closing Price |
 
 
-## 实时成交行情（最新成交行情数据）
+## Real-Time Transaction Quotes
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -1240,7 +1261,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -1266,38 +1287,38 @@ available | 可用余额
 }
 ```
 
-请求最新成交行情数据(时间最近的50条成交数据)
+Return 50 of the latest transactions for a currency pair.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/market/tickers`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-| 字段名    | 填写类型 | 描述                                       |
-| ------ | ---- | ---------------------------------------- |
-| symbol | 必填   | 交易对                                      |
+| Parameter | Mandatory | Description |
+| --------- | --------- | ----------- |
+| symbol    | Yes       | Trade Pair  |
 
-### 响应参数
+###  Response Parameters
 
-| 字段名       | 描述                |
-| --------- | ----------------- |
-| timestamp | 时间戳(毫秒数)          |
-| result    | 返回结果              |
-| volume    | 交易数量              |
-| dealTime  | 交易时间(时间戳)         |
-| price     | 交易价格              |
-| action    | 交易类型 BUY-买,SELL-卖 |
+| Parameter | Description                         |
+| --------- | ----------------------------------- |
+| timestamp | Timestamp                           |
+| result    | Results                             |
+| volume    | Volume Traded                       |
+| dealTime  | Transaction Timestamp               |
+| price     | Transaction Price                   |
+| action    | Order Type (BUY - Buy, SELL - Sell) |
 
 
 
-## 实时成交行情（最新成交行情数据）
+## Supported Currency Pairs List
 
-> 请求示例:
+> Request Sample:
 
 ```json
 {
@@ -1312,7 +1333,7 @@ available | 可用余额
 }
 ```
 
-> 返回示例:
+> Response Sample:
 
 ```json
 {
@@ -1342,29 +1363,30 @@ available | 可用余额
 }
 ```
 
-请求目前交易所的可交易的交易对列表
+Returns a list of all supported currency pairs, as well as some currency pair specific trading information.
 
-### 请求路径
+### Endpoint Path
 
 `/api/v1/market/symbolList`
 
-### 请求方式
+### Endpoint Details
 
 `POST`
 
-### 请求参数
+### Request Parameters
 
-使用公有参数
+Only uses common parameters.
 
-### 响应参数
+###  Response Parameters
 
-| 字段名            | 描述        |
-| -------------- | --------- |
-| timestamp      | 时间戳(毫秒数)  |
-| result         | 返回结果      |
-| symbol         | 交易对       |
-| quantityMin    | 最小委托量     |
-| quantityMax    | 最大委托量     |
-| priceMin       | 最小委托价     |
-| priceMax       | 最大委托价     |
-| deviationRatio | 委托价最大偏差系数 |
+| Parameter      | Description                              |
+| -------------- | ---------------------------------------- |
+| timestamp      | Timestamp                                |
+| result         | Results                                  |
+| symbol         | Trade Pair                               |
+| quantityMin    | Minimum Transaction Quantity             |
+| quantityMax    | Maximum Transaction Quantity             |
+| priceMin       | Minimum Transaction Price                |
+| priceMax       | Maximum Transaction Price                |
+| deviationRatio | Maximum Deviation Ratio in Transaction Price |
+
