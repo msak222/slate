@@ -613,3 +613,26 @@ html, body {
 .highlight, .highlight .w {
   background-color: $code-bg;
 }
+
+/* added */
+.toc-list-h1 {
+  & li {
+    &:nth-child(1),
+    &:nth-child(2){
+      & a {
+        padding-left: 15px;
+      }
+    }
+    & a {
+      padding-left: 30px;
+    }
+  }
+  & .toc-list-h2 {
+    & li {
+      & a {
+        padding-left: 45px;
+      }
+    }
+  }
+}
+/* added */

@@ -7,19 +7,6 @@ toc_footers:
 
 includes:
   - errors
-  
-<div id="menu">
-        <p id="sandbox-message">You are viewing the Gemini sandbox documentation</p>
-        <div class="nav-label">Select an API Document:</div>
-        <ul>
-          <li id="block-trading"><a href="/block-trading/">Block Trading</a></li>
-          <li id="rest"><a href="/rest-api/">REST</a></li>
-          <li id="websocket"><a href="/websocket-api/">WebSocket</a></li>
-          <li id="fix-api"><a href="/fix-api/">FIX Order Entry</a></li>
-          <li id="fix-marketdata"><a href="/fix-marketdata/">FIX Market Data</a></li>
-          <li id="fix-dropcopy"><a href="/fix-dropcopy/">FIX Drop Copy</a></li>
-        </ul>
-      </div>
       
 search: true
 ---
