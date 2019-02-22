@@ -6,20 +6,19 @@ toc_footers:
 
 
 includes:
-  - errors
 
 search: true
 ---
 
-# 介绍
+# Introduce
 
-Coinsuper  API是一套高性能RESTful JSON端点，专门用于满足应用程序开发人员，数据科学家和企业业务平台的关键任务需求。
+Coinsuper  API is a high-performance RESTful JSON endpoint dedicated to meeting the critical mission needs of application developers, data scientists and enterprise business platforms.
+ 
+This API reference includes all the technical documentation that developers need to integrate third-party applications and platforms.
 
-此API参考包括开发人员集成第三方应用程序和平台所需的所有技术文档。
+# Global Rule
 
-# 全局规则
-
-##接口访问前缀
+##Interface access prefix
 
 - 接口访问前缀：<aside class="notice">https://api.coinsuper.com</aside>
 
