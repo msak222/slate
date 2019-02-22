@@ -15,6 +15,7 @@ search: true
 
 Coinsuper  API iis an interface provided by Coinsuper for external developers.
 
+# **REST API**
 # General Information
 
 ##API Request URI Prefix
