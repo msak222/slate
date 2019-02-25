@@ -1,7 +1,7 @@
 # **WEBSOCKET API**
-# Protocol Overview
+## Protocol Overview
 
-##API Information
+###API Information
 
 - A websocket connection must be made beforehand in order to obtain data from the streams.
 - This API consists of Websocket Push.
@@ -10,9 +10,9 @@
 - If the Websocket link is broken, follow a disconnect/reconnect protocol to re-establish the link.
 - The client needs to send the below specified parameters in order to establish the websocket connection.
 
-##Websocket Connection Instructions
+###Websocket Connection Instructions
 
-###Public Quote Topic Parameters
+####Public Quote Topic Parameters
 
 1.Base endpoint server name and port：
     host:mqtt.coinsuper.com
@@ -34,7 +34,7 @@
   topic=$env$subTopic
   Where the $env=exchange_ha_prod_hk，"$subTopic"s are described below.
 
-###Private Data Topic Parameters
+####Private Data Topic Parameters
 
 1.Base endpoint server name and port：
     host:mqtt.coinsuper.com
@@ -55,9 +55,9 @@
   topic=$env$subTopic
   Where the $env=exchange_ha_prod_hk，"$subTopic"s are described below.
 
-# Quotes Channels
+## Quotes Channels
 
-##  Latest Detailed Market Data
+###  Latest Detailed Market Data
 
 > Topic Sample:
 
@@ -580,25 +580,25 @@ exchange_ha_prod_hk/api/ws/v1/market/depth/BTC_USD
 }
 ```
 
-### Function Definition
+#### Function Definition
 
 Connect to current market depth data for a specific currency (latest 50).
 
-### Topic:
+#### Topic:
 
 `$env/api/ws/v1/market/depth/$topicSymbol`
 
-### Push frequency:
+#### Push frequency:
 
 `1 per Second`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name       | Mandatory | Description    |
 | ---------- | ---- | ------------------- |
 | topicSymbol| Yes  |Currency Pair        |
 
-### Response Parameters
+#### Response Parameters
 
 | Name         | Description                              |
 | ------------ | ---------------------------------------- |
@@ -613,7 +613,7 @@ Connect to current market depth data for a specific currency (latest 50).
 | stepValue    | This field will be removed. Please ignore it. |
 
 
-## Latest Order Book Data
+### Latest Order Book Data
 
 > Topic Sample:
 
@@ -785,19 +785,19 @@ exchange_ha_prod_hk/api/ws/v1/market/orderBook/BTC_USD/0.01
     "timestamp":1532686075803
 }
 ```
-### Function Definition:
+#### Function Definition:
 
 Connect to the order book data stream. (Shows last 15 orders)
 
-### Topic
+#### Topic
 
 `$env/api/ws/v1/market/orderBook/$topicSymbol/$step`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name        | Mandatory | Description                              |
 | ----------- | --------- | ---------------------------------------- |
@@ -805,7 +805,7 @@ Connect to the order book data stream. (Shows last 15 orders)
 | step        | Yes       | Aggregation Depth(For fiat, this value should be: 1.0，0.1，0.01；For crypto, this value should be:0.0001，0.000001，0.00000001) |
 
 
-###  Data Parameters
+####  Data Parameters
 
 | Name       | Description                              |
 | ---------- | ---------------------------------------- |
@@ -820,7 +820,7 @@ Connect to the order book data stream. (Shows last 15 orders)
 | amount     | This field will be removed. Please ignore it. |
 
 
-## Latest Kline Data
+### Latest Kline Data
 
 > Topic Sample:
 
@@ -841,26 +841,26 @@ exchange_ha_prod_hk/api/ws/v1/market/kline/BTC_USD/60000
     "timestamp":1532686140000
 }
 ```
-### Function Definition:
+#### Function Definition:
 
 Contains between 1 minute to 1 month of Kline data, returned as a single data point per push.
 
-### Topic
+#### Topic
 
 `$env/api/ws/v1/market/orderBook/$topicSymbol/$step`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name        | Mandatory | Description                              |
 | ----------- | --------- | ---------------------------------------- |
 | topicSymbol | Yes       | Currency Pair                            |
 | range       | Yes       | Kline Duration (1 Minute:60000，5 Minutes:300000，15 Minutes:900000，30 Minutes:1800000，1 Hour:3600000，2 Hours:7200000，4 Hours:14400000，6 Hours:21600000，12 Hours:43200000，1 Day:86400000，1 Month:604800000) |
 
-###  Data Parameters
+####  Data Parameters
 
 | Name      | Description              |
 | --------- | ------------------------ |
@@ -874,7 +874,7 @@ Contains between 1 minute to 1 month of Kline data, returned as a single data po
 | last      | Closing Price            |
 
 
-## Real Time Transaction Data
+### Real Time Transaction Data
 
 > Topic Sample:
 
@@ -1028,25 +1028,25 @@ exchange_ha_prod_hk/api/ws/v1/market/tickers/BTC_USD
     }
 ]
 ```
-### Function Definition:
+#### Function Definition:
 
 Request the latest transaction data (up to 50 entries)
 
-### Topic
+#### Topic
 
 `$env/api/ws/v1/market/tickers/$topicSymbol`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name        | Mandatory | Description   |
 | ----------- | --------- | ------------- |
 | topicSymbol | Yes       | Currency Pair |
 
-###  Data Parameters
+####  Data Parameters
 
 | Name      | Description                             |
 | --------- | --------------------------------------- |
@@ -1057,9 +1057,9 @@ Request the latest transaction data (up to 50 entries)
 | action    | Transaction Direction BUY-Buy,SELL-Sell |
 
 
-# Private Data
+## Private Data
 
-## Change of Asset in User Account
+### Change of Asset in User Account
 
 > Topic Sample:
 
@@ -1090,25 +1090,25 @@ exchange_ha_prod_hk/api/ws/personal/v1/asset/change/demouser@demo.domain
     "userNo":"1600000000000000000"
 }
 ```
-### Function Definition:
+#### Function Definition:
 
 Connect to asset data after change of account info. In order to ensure the security of funds information, the asset change push interface needs to be approved after the official API technology group application is approved. (Please note: omission or duplication of "Push" data may occur under this topic)
 
-### Topic
+#### Topic
 
 `$env/api/ws/personal/v1/asset/change/$email`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name  | Mandatory | Description                |
 | ----- | --------- | -------------------------- |
 | email | Yes       | User Account Email Address |
 
-###  Data Parameters
+####  Data Parameters
 
 | Name      | Description                |
 | --------- | -------------------------- |
@@ -1121,7 +1121,7 @@ Connect to asset data after change of account info. In order to ensure the secur
 | timestamp | Time Of Query              |
 
 
-## Change of Order Status
+### Change of Order Status
 
 > Topic Sample:
 
@@ -1149,25 +1149,25 @@ exchange_ha_prod_hk/ws/personal/v1/order/change/demouser@demo.domain
     "utcUpdate":"1541511806925"
 }
 ```
-### Function Definition:
+#### Function Definition:
 
 Connect to the data of order status changes (currently only connectable to pushes of order creation and order withdrawal. Please note: omission or duplication of "Push" data may occur under this topic)
 
-### Topic
+#### Topic
 
 `$env/ws/personal/v1/order/change/$email`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 | Name  | Mandatory | Description                |
 | ----- | --------- | -------------------------- |
 | email | Yes       | User Account Email Address |
 
-###  Data Parameters
+####  Data Parameters
 
 | Name              | Description                              |
 | ----------------- | ---------------------------------------- |
@@ -1186,7 +1186,7 @@ Connect to the data of order status changes (currently only connectable to pushe
 | utcUpdate         | Time Of Update                           |
 
 
-## Change of Order Transaction
+### Change of Order Transaction
 
 > Topic Sample:
 
@@ -1209,26 +1209,26 @@ exchange_ha_prod_hk/ws/personal/v1/trade/change/demouser@demo.domain
     "utcDeal":"1541512249094"
 }
 ```
-### Function Definition:
+#### Function Definition:
 
 Connect to transaction data(Please note: omission or duplication of "Push" data may occur under this topic)
 
-### Topic
+#### Topic
 
 `$env/ws/personal/v1/trade/change/$email`
 
-### Push Frequency
+#### Push Frequency
 
 `1 per 1-2 Seconds`
 
-### Topic Parameters
+#### Topic Parameters
 
 
 | Name  | Mandatory | Description                |
 | ----- | --------- | -------------------------- |
 | email | Yes       | User Account Email Address |
 
-###  Data Parameters
+####  Data Parameters
 
 | Name      | Description                              |
 | --------- | ---------------------------------------- |
