@@ -1,13 +1,13 @@
 # **FIX API**
-# Connectivity
+## Connectivity
 
-##API Access Address
+###API Access Address
 
 -   API access address: api-fix-premium.coinsuper.com
 -   API access portal: 1443
 -   API access protocol: TCP(SSL)
 
-##API Specifications
+###API Specifications
 
 -   Access using the SSL socket keep-alive connection.
 
@@ -21,7 +21,7 @@
 
 -   Log-on is required for API calls. For log-on methods and parameters, please refer to the following parameter list.
 
-##POST Body Format
+###POST Body Format
 
 1. Parameter Descriptions:
   1.1 Request Parameters:
@@ -44,7 +44,7 @@
 
 5. Logon messages shall be delivered before a request is sent.
 
-##Logon Signature Generation Method
+###Logon Signature Generation Method
 
 Our API requires a signature to be generated, to verify that information has not been tampered with or falsified by bad actors. Therefore, the generation method of sign strings shall be defined.
 
@@ -62,7 +62,7 @@ $accessKey and $secretKey are acquired by API access.
 
 [Get API Access](https://premium-exp.coinsuper.com)
 
-##Signature Generation Sample 
+###Signature Generation Sample 
 
 Our API requires a signature to be generated, to verify that information has not been tampered 
 with or falsified by bad actors.
@@ -73,7 +73,7 @@ a. Sort all request parameters along with "accesskey" and "secretkey" according 
 
 b. Apply MD5 encryption to the string. The final 32 bits will become the sign: XXXXXXXXXX...;
 
-##Signature Generation Sample
+###Signature Generation Sample
 
 
 Let us suppose there is a request with these parameters, among which,
@@ -95,7 +95,7 @@ signValue = md5(string);
 Complete Request Body:
 8=FIX.4.49=11735=A34=149=zhangsan52=20181228-13:26:54.49756=SERVERTARGET95=3296=74c544ec967aae34fe84a30bae59520798=0108=3010=188
 
-##FIX is requesting a standard message header.
+###FIX is requesting a standard message header.
 
 Hint: every request of interface must convey the correspondent parameters of the message. The definitions of interfaces and exemples of requests are listed as follows that may help to understand specific operation methods.
 
@@ -109,7 +109,7 @@ Hint: every request of interface must convey the correspondent parameters of the
 | SendingTime  | 52         | Compulsory        | Request on sending the time (UTC  time). |
 | TargetCompID | 56         | Compulsory        | The signal of server, please  read the [login signature discription] above for references. |
 
-## General Exceptions
+### General Exceptions
 
 | **Exception**                | Description                              |
 | ---------------------------- | ---------------------------------------- |
@@ -121,9 +121,9 @@ Hint: every request of interface must convey the correspondent parameters of the
 
  Note: Exceptions are usually responded with "Reject". All APIs shall contain more detailed information.
  
-# Messages
+## Messages
 
-## Logon
+### Logon
 
 Description:
 
@@ -176,7 +176,7 @@ Response Parameters:
 
 ------
 
-## Logout
+### Logout
 
 Description:
 
@@ -212,7 +212,7 @@ None
 
 ------
 
-## Heartbeat
+### Heartbeat
 
 Description:
 
@@ -249,7 +249,7 @@ None
 ------
 
 
-## Order Creation
+### Order Creation
 
 Description:
 
@@ -328,7 +328,7 @@ Response Parameters:
 
 ------
 
-## Order Cancellation
+### Order Cancellation
 
 Description:
 
@@ -379,7 +379,7 @@ Upon failures due to various reasons, values shall be obtained from the response
 
 -------------------- -----------------------------------
 
-## Queries into Unfinished Orders
+### Queries into Unfinished Orders
 
 Description:
 

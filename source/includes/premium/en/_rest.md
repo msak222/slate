@@ -1,14 +1,14 @@
 # **REST API**
-# General Information
+## General Information
 
-##API Request URI Prefix
+###API Request URI Prefix
 
 - API Request URI Prefix：<aside class="notice">https://api-fix-premium.coinsuper.com</aside>
 
 - API Request URI example(Personal Asset Information)：
   <aside class="notice">https://api-fix-premium.coinsuper.com/api/v1/asset/userAssetInfo</aside>
 
-##API Specifications
+###API Specifications
 
 - Access using HTTPS.
 - All API requests are made as REST POST requests.
@@ -17,7 +17,7 @@
 - Interfacing with our API requires encryption. This will be described in detail below.
 - All POST headers must specify Content-Type=application/json
 
-##POST Body Format
+###POST Body Format
 
 > Sample JSON POST Body
 
@@ -90,9 +90,9 @@
 5.To see which transaction pair symbols are supported, check the interface under section 3.5
 
 
-# Get API Keys
+## Get API Keys
 
-##Signature Generation Method 
+###Signature Generation Method 
 
 Our API requires a signature to be generated, to verify that information has not been tampered 
 with or falsified by bad actors.
@@ -103,7 +103,7 @@ a. Sort all request parameters along with "accesskey" and "secretkey" according 
 
 b. Apply MD5 encryption to the string. The final 32 bits will become the sign: XXXXXXXXXX...;
 
-##Signature Generation Sample
+###Signature Generation Sample
 
 
 >Complete Request Body  :
@@ -144,7 +144,7 @@ signValue = md5(string);
 
 signValue == acd1761b47fb5d65c1ef9e644adba4fc
 
-##Status Code Table 
+###Status Code Table 
 
 | Code Number | Code Message                      |
 | ---- | ---------------------------------------- |
@@ -182,9 +182,9 @@ signValue == acd1761b47fb5d65c1ef9e644adba4fc
 | 3021 | order has canceled                       |
 | 3027 | this symbol's API trading channel is not available |
 
-# User Asset Queries
+## User Asset Queries
 
-## Personal Asset Information
+### Personal Asset Information
 
 > Request Sample:
 
@@ -232,19 +232,19 @@ signValue == acd1761b47fb5d65c1ef9e644adba4fc
 
 Obtain your own personal asset information.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/asset/userAssetInfo`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request parameters
+#### Request parameters
 
     Only common parameters must be included.
 
-### Response Parameters
+#### Response Parameters
 
 | Parameter | Description           |
 | --------- | --------------------- |
@@ -255,9 +255,9 @@ Obtain your own personal asset information.
 | total     | Total Balance         |
 | available | Available Balance     |       
 
-# Transactions
+## Transactions
 
-## Place a Buy Order
+### Place a Buy Order
 
 > Request Sample:
 
@@ -295,15 +295,15 @@ Obtain your own personal asset information.
 
 Place a buy order.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/buy`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter        | Mandatory | Description                  |
 | ---------- | ---- | ------------------- |
@@ -319,7 +319,7 @@ equal to "0" and will not be used.
 2. If order type is MKT, the API will only use "amount". "priceLimit' and "quantity" should 
 be "0" and will not be used.
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description     |
 | --------- | --------------- |
@@ -328,7 +328,7 @@ be "0" and will not be used.
 | orderNo   | Order Number ID |     
 
 
-## Place a Sell Order
+### Place a Sell Order
 
 > Request Sample:
 
@@ -366,15 +366,15 @@ be "0" and will not be used.
 
 Place a sell order.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/sell`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter  | Mandatory | Description                              |
 | ---------- | --------- | ---------------------------------------- |
@@ -385,7 +385,7 @@ Place a sell order.
 | amount     | Yes       | Amount(String type)                      |
 
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description     |
 | --------- | --------------- |
@@ -395,7 +395,7 @@ Place a sell order.
 
 
 
-## Cancel Order
+### Cancel Order
 
 > Request Sample:
 
@@ -429,22 +429,22 @@ Place a sell order.
 
 Cancel a previously placed order.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/cancel`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description     |
 | --------- | --------- | --------------- |
 | orderNo   | Yes       | Order Number ID |
 
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description                              |
 | --------- | ---------------------------------------- |
@@ -453,7 +453,7 @@ Cancel a previously placed order.
 | operate   | Result Description : "success" or "failure" |
 
 
-## Batch Cancellation of Orders
+### Batch Cancellation of Orders
 
 > Request Sample:
 
@@ -493,21 +493,21 @@ Cancel a previously placed order.
 
 User Cancels Orders
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/batchCancel`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter     | Mandatory | Description       |
 | ------- | ---- | -------- |
 | orderNoList | Yes   | Order Number to Cancel|
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description                              |
 | --------- | ---------------------------------------- |
@@ -516,7 +516,7 @@ User Cancels Orders
 | operate   | Result Description : "success" or "failure" |
 
 
-## Return Order List
+### Return Order List
 
 > Request Sample:
 
@@ -579,21 +579,21 @@ User Cancels Orders
 
 Obtain a list of order information (maximum 50 at one time). The user passes in the Order IDs for the orders they wish to check.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/list`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter   | Mandatory | Description                              |
 | ----------- | --------- | ---------------------------------------- |
 | orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
@@ -614,7 +614,7 @@ Obtain a list of order information (maximum 50 at one time). The user passes in 
 | utcCreate         | Timestamp on Order Creation              |
 
 
-## Return Detailed Order List
+### Return Detailed Order List
 
 > Request Sample:
 
@@ -710,21 +710,21 @@ Obtain a list of order information (maximum 50 at one time). The user passes in 
 Returns a list of information for up to 50 Orders. This information is more detailed than 2.4 
 and includes individual transactions related to the order.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/details`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter   | Mandatory | Description                              |
 | ----------- | --------- | ---------------------------------------- |
 | orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
@@ -749,7 +749,7 @@ and includes individual transactions related to the order.
 | utcDeal           | Timestamp of Transaction                 |
 
 
-## Pending Order List
+### Pending Order List
 
 > Request Sample:
 
@@ -786,22 +786,22 @@ and includes individual transactions related to the order.
 
 Obtain a list of pending orders (up to 1000) for a trade pair.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/openList`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description                              |
 | --------- | --------- | ---------------------------------------- |
 | symbol    | No        | Trade Pair (Querries all Trade Pairs if unfilled) |
 | num       | Yes       | Number of results to return (Max 1000)   |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description                |
 | --------- | -------------------------- |
@@ -809,7 +809,7 @@ Obtain a list of pending orders (up to 1000) for a trade pair.
 | result    | Results, List of order IDs |
 
 
-## Query Personal Order History
+### Query Personal Order History
 
 > Request Sample:
 
@@ -880,15 +880,15 @@ Obtain a list of pending orders (up to 1000) for a trade pair.
 
 Request Personal Order History
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/history`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter    | Mandatory | Description                              |
 | ------------ | --------- | ---------------------------------------- |
@@ -899,7 +899,7 @@ Request Personal Order History
 | withTrade    | NO        | Return the Transaction Details of Corresponding Orders or Not (true-Return, false-Not Return (in lower case)) |
 | size         | NO        | Number of Results (temporarily limited to 1-100) |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter         | Description                              |
 | ----------------- | ---------------------------------------- |
@@ -928,7 +928,7 @@ Request Personal Order History
 | utcDeal           | Transaction Timestamp (ms)               |
 
 
-## Query Personal Trade History
+### Query Personal Trade History
 
 > Request Sample:
 
@@ -976,15 +976,15 @@ Request Personal Order History
 
 Request Personal Trade History
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/order/tradeHistory`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | FieldName   | Mandatory | Description                              |
 | ----------- | --------- | ---------------------------------------- |
@@ -993,7 +993,7 @@ Request Personal Trade History
 | utcEnd      | NO        | Query End Time ( ≥ order creation time in the results, timestamps in ms) |
 | startDealNo | NO        | Start Transaction Number (Its data are excluded from the query results. If it is not passed, the first page of data will be queried.) |
 | size        | NO        | Number of Results (When the last result has the same order number as the size+1 result, return the size+1 result and show size+1 results) |
-###  Response Parameters
+####  Response Parameters
 
 | Parameter   | Description                              |
 | ----------- | ---------------------------------------- |
@@ -1013,9 +1013,9 @@ Request Personal Trade History
 
 
 
-#Quotes
+##Quotes
 
-## Detailed Market Quote (10%)
+### Detailed Market Quote (10%)
 
 > Request Sample:
 
@@ -1060,21 +1060,21 @@ Request Personal Trade History
 
 Obtain top 10% bids and asks for a trade pair.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/market/depth`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description |
 | --------- | --------- | ----------- |
 | symbol    | Yes       | Trade Pair  |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter  | Description       |
 | ---------- | ----------------- |
@@ -1086,7 +1086,7 @@ Obtain top 10% bids and asks for a trade pair.
 | quantity   | Quantity on Offer |
 
 
-## Detailed Market Quote (1-50)
+### Detailed Market Quote (1-50)
 
 > Request Sample:
 
@@ -1122,22 +1122,22 @@ Obtain top 10% bids and asks for a trade pair.
 
 Return top 1-50 asks and bids for a trade pair.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/market/orderBook`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description                 |
 | --------- | --------- | --------------------------- |
 | num       | Yes       | Number of results to return |
 | symbol    | Yes       | Trade Pair                  |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter  | Description       |
 | ---------- | ----------------- |
@@ -1149,7 +1149,7 @@ Return top 1-50 asks and bids for a trade pair.
 | quantity   | Quantity on Offer |
 
 
-## Real Time Price Quotes
+### Real Time Price Quotes
 
 > Request Sample:
 
@@ -1199,15 +1199,15 @@ Return top 1-50 asks and bids for a trade pair.
 
 Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points in 5 minute increments.)
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/market/kline`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description                              |
 | --------- | --------- | ---------------------------------------- |
@@ -1215,7 +1215,7 @@ Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points
 | num       | Yes       | Data Point Count                         |
 | range     | No        | Kline range(available values:5min,15min,30min,1hour,6hour,12hour,1day),default value:5min |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description   |
 | --------- | ------------- |
@@ -1228,7 +1228,7 @@ Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points
 | close     | Closing Price |
 
 
-## Real-Time Transaction Quotes
+### Real-Time Transaction Quotes
 
 > Request Sample:
 
@@ -1273,21 +1273,21 @@ Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points
 
 Return 50 of the latest transactions for a currency pair.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/market/tickers`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 | Parameter | Mandatory | Description |
 | --------- | --------- | ----------- |
 | symbol    | Yes       | Trade Pair  |
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter | Description                         |
 | --------- | ----------------------------------- |
@@ -1300,7 +1300,7 @@ Return 50 of the latest transactions for a currency pair.
 
 
 
-## Supported Currency Pairs List
+### Supported Currency Pairs List
 
 > Request Sample:
 
@@ -1349,19 +1349,19 @@ Return 50 of the latest transactions for a currency pair.
 
 Returns a list of all supported currency pairs, as well as some currency pair specific trading information.
 
-### Endpoint Path
+#### Endpoint Path
 
 `/api/v1/market/symbolList`
 
-### Endpoint Details
+#### Endpoint Details
 
 `POST`
 
-### Request Parameters
+#### Request Parameters
 
 Only uses common parameters.
 
-###  Response Parameters
+####  Response Parameters
 
 | Parameter      | Description                              |
 | -------------- | ---------------------------------------- |
