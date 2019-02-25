@@ -178,7 +178,7 @@ Response Sample:
 
 ------
 
-## **1.2 Logout**
+## Logout
 
 Description:
 
@@ -218,7 +218,7 @@ Response Sample:
 
 ------
 
-## 1.3 Heartbeat
+## Heartbeat
 
 Description:
 
@@ -259,7 +259,7 @@ Response Sample:
 ------
 
 
-## **2.1 Order Creation**
+## Order Creation
 
 Description:
 
@@ -273,7 +273,7 @@ NewOrderSingle
 
 API Request Parameters:
 
-| **Parameter** | **Field Code** | **Mandatory** | **Description**                          |
+| Parameter | Field Code | Mandatory | Description                          |
 | ------------- | -------------- | ------------- | ---------------------------------------- |
 | ClOrdID       | 11             | Yes           | Customized order ID from the client-side (cannot repeat) |
 | Symbol        | 55             | Yes           | Trading pairs                            |
@@ -310,7 +310,7 @@ ExecutionReport
 
 Response Parameters:
 
-| **Parameter** | Field Code | **Description**                          |
+| Parameter | Field Code | Description                          |
 | ------------- | ---------- | ---------------------------------------- |
 | ClOrdID       | 11         | Customized order ID from the client-side |
 | OrderID       | 37         | Order ID generated from the server-side  |
@@ -330,7 +330,7 @@ Request Sample：
 8=FIX.4.49=22335=834=18349=COINSUPER52=20190104-10:08:42.34256=zhangsan6=014=017=a0cbfd23455e4b6faaacbe5fb36caf9920=037=162172399493790924939=054=255=BTC/USD60=20190104-18:08:42.341150=0151=0.310=036
 ```
 
-| **Exception**                            | **Description**                          |
+| Exception                            | Description                         |
 | ---------------------------------------- | ---------------------------------------- |
 | symbol not trading                       | Trading pairs are not availablefortrading |
 | order amount or quantity less than min setting | The trading quantity/amount is lower than the minimum requirement |
@@ -342,7 +342,7 @@ Request Sample：
 
 ------
 
-## 2.2 Order Cancellation
+## Order Cancellation
 
 Description:
 
@@ -356,7 +356,7 @@ OrderCancelRequest
 
 API Request Parameters:
 
-| **Parameter** | Field Code | **Mandatory** | **Description**                         |
+| Parameter | Field Code | Mandatory | Description                         |
 | ------------- | ---------- | ------------- | --------------------------------------- |
 | OrderID       | 37         | Yes           | Order ID generated from the server-side |
 
@@ -389,16 +389,15 @@ Request Sample:
 
 Upon failures due to various reasons, values shall be obtained from the response parameters:
 
-| **Exception**      | Description                      |
+| Exception      | Description                      |
 | ------------------ | -------------------------------- |
 | order no not exist | There exists no unfinished order |
 | order has canceled | The order has been canceled      |
 | order has execute  | The order has been completed     |
 
 -------------------- -----------------------------------
-####3. Query Type
 
-##### **3.1 Queries into Unfinished Orders**
+## Queries into Unfinished Orders
 
 Description:
 
