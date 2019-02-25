@@ -6,7 +6,6 @@ toc_footers:
 
 
 includes:
-  - premium/en/fix
   - premium/en/websocket
   
 search: true
