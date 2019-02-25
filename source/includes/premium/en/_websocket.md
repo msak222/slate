@@ -1,5 +1,5 @@
 # **WEBSOCKET API**
-# General Information
+# Protocol Overview
 
 ##API Information
 
@@ -55,7 +55,7 @@
   topic=$env$subTopic
   Where the $env=exchange_ha_prod_hk，"$subTopic"s are described below.
 
-# Quotes
+# Quotes Channels
 
 ##  Latest Detailed Market Data
 
