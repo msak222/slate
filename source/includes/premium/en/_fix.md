@@ -1,98 +1,68 @@
 # **FIX API**
-# General Information
+# Connectivity
 
-##API Request URI Prefix
+##API Access Address
 
-- API Request URI Prefix：<aside class="notice">https://api-fix-premium.coinsuper.com</aside>
-
-- API Request URI example(Personal Asset Information)：
-  <aside class="notice">https://api-fix-premium.coinsuper.com/api/v1/asset/userAssetInfo</aside>
+-   API access address: api-fix-premium.coinsuper.com
+-   API access portal: 1443
+-   API access protocol: TCP(SSL)
 
 ##API Specifications
 
-- Access using HTTPS.
-- All API requests are made as REST POST requests.
-- Bodies of POST requests should be formatted as JSON.
-- Return values will be formatted in JSON.
-- Interfacing with our API requires encryption. This will be described in detail below.
-- All POST headers must specify Content-Type=application/json
+-   Access using the SSL socket keep-alive connection.
+
+-   All API requests are made as FIX (4.4) requests.
+
+-   API request data should meet the FIX protocol format.
+
+-   API return values should meet the FIX protocol format.
+
+-   When the server-side receives user requests, responses will follow later. The specific response formats are referred to the following parameter list.
+
+-   Log-on is required for API calls. For log-on methods and parameters, please refer to the following parameter list.
 
 ##POST Body Format
 
-> Sample JSON POST Body
+1. Parameter Descriptions:
+  1.1 Request Parameters:
+  Client-side fixed parameters:
+  BeginString=FIX.4.4
+  TargetCompID=COINSUPER
+  HeartBtInt=30
+  1.2 Response Parameters:
+	For specific responses, please refer to the following API list. Please refer to the provided table to find out what exception has occurred.
+	
+2. Quotation accuracy:
+  2.1 For crypto-crypto transactions, the price is accurate to 8 decimal places and the quantity is accurate to 4 decimal places.
+  2.2 For crypto-fiat transactions, the price is accurate to 2 decimal places and the quantity is accurate to 4 decimal places.
+  2.3 The API servers will always use this degree of accuracy, regardless of decimal places of request inputs in the "data" parameters.
+  
+3. Signature:
+  All requests must contain a valid signature. The signature generation method is detailed below.
 
-```
-{
-    "common":{
-        "accesskey" : "1900000109",            // Personal Accesskey
-        "sign":"sdfsdfa1231231sdfsdfsd"        // MD5 Encrypted Secret Key
-        "timestamp":"1500000000000",        //UTC Time (Milliseconds)
-    },
-    "data":{
-        ......                                //Data Specific to Request
-    }
-}
+4. Other market data may be acquired through the REST API or WebSocket API.
 
-```
+5. Logon messages shall be delivered before a request is sent.
 
-> Sample JSON Response
+##Logon Signature Generation Method
 
-```
-{
-        "code":"1000",    // Status Code
-        "msg":"success",    // Message Corresponding With Status Code
-        "data":{
-                    "timestamp":"1500000000000", //System UTC Time (Milliseconds)
-                    "result":{
-                                ....
-                             }                  //Returned Data Specific to Request
-                ..... 
-               }    // Return Data
-}
-```
+Our API requires a signature to be generated, to verify that information has not been tampered with or falsified by bad actors. Therefore, the generation method of sign strings shall be defined.
 
-1.Parameter Descriptions：
+a. During logon requests, sort the parameters, such as SendingTime, MsgType, MsgSeqNum, SenderCompID, TargetCompID, $secretKey, according to the parameter name (small to large), connect them with "," and then combine the MD5 encrypted signature to generate sign.
 
-    1.1 Request Parameters：
-    
-   Request parameters can be split into the "common" and "data" categories. Every request from 
-   a user needs the same "common" parameters to be transmitted. These "common" parameters include 
-   the "accesskey", "sign" and "timestamp". The "data" category will be specific to the type of 
-   request being made. The "data" field must always be included in the JSON, even if it is left 
-   empty for that type of request.
-   
-    1.2 Response Parameters：
-    
-   The response parameters "code" and "msg" will be returned every time. After a successful 
-   request, "code" should be equal to "1000". If the code is not "1000", refer to the provided 
-   table to find out what exception has occurred.
+b. During logon requests, the required parameters include SendingTime, MsgType, MsgSeqNum, SenderCompID and TargetCompID.
 
-2.Quotation Accuracy：
-   
-    2.1 For crypto-crypto transactions, the price is accurate to 8 decimal places. quantity is 
-        accuate to 4 decimal places.
-   
-    2.2 For crypto-fiat transactions, the price is accurate to 2 decimal places and the quantity 
-        is accurate to 4 decimal places.
-   
-    2.3 The API servers will always use this degree of accuracy, regardless of decimal places of 
-        request inputs in the "data" field.
+c. During logon requests, please do not send $secretKey to secure the accounts.
 
-3.Signature:
-   
-    All requests must contain a valid signature. The signature generation method is detailed 
-    below.
+d. During logon requests, "sign" shall be added as RawData to the Logon message, with words in lower case.
 
-4.Timestamp:
-   
-    All timestamps recieved or sent must use UTC time, specified down to atomic milliseconds.
+Note:
+SenderCompID=$accessKey；
+$accessKey and $secretKey are acquired by API access.
 
-5.To see which transaction pair symbols are supported, check the interface under section 3.5
+[Get API Access](https://premium-exp.coinsuper.com)
 
-
-# Get API Keys
-
-##Signature Generation Method 
+##Signature Generation Sample 
 
 Our API requires a signature to be generated, to verify that information has not been tampered 
 with or falsified by bad actors.
@@ -106,1270 +76,380 @@ b. Apply MD5 encryption to the string. The final 32 bits will become the sign: X
 ##Signature Generation Sample
 
 
->Complete Request Body  :
+Let us suppose there is a request with these parameters, among which,
+$accesskey : zhangsan，$secretkey : zhangsan，TargetCompID : SERVERTARGET
 
-```json
-{	
-  "common":{	
-    "accesskey":"zhangsan",
-    "sign":"acd1761b47fb5d65c1ef9e644adba4fc",
-    "timestamp":"1500000000000"
-  },
-  "data":{
-    "symbol":"BTC/USD",
-    "num"   :"50"
-  }
-}
-```
+Logon Request Parameters:
+"MsgSeqNum" -> "1"
+"MsgType" -> "A"
+"SenderCompID" -> "zhangsan"
+"SendingTime" -> "20181228-13:08:08.091"
+"TargetCompID" -> "SERVERTARGET"
 
-Let us suppose there is a request with these parameters:
+i: The sorted pre-encryption signature string then is:
+1,A,zhangsan,20181228-13:26:54.497,SERVERTARGET,zhangsan
 
-Request Parameters：
-symbol : BTC/USD
-num    : 50
-
-Common Request Parameters:
-accesskey : zhangsan
-secretkey : zhangsan
-timestamp : 1500000000000
-
-i：The sorted pre-encryption signature string then is：
-
-accesskey=zhangsan&num=50&secretkey=zhangsan&symbol=BTC/USD&timestamp=1500000000000
-
-ii：Finally, we encrypt the raw signature string and assign it to signValue. This will be the 
-   "sign" for the actual request body
-
+ii: Finally, we encrypt the raw signature string and assign it to signValue. This will be the "sign" for the actual request body.
 signValue = md5(string);
 
-signValue == acd1761b47fb5d65c1ef9e644adba4fc
+Complete Request Body:
+8=FIX.4.49=11735=A34=149=zhangsan52=20181228-13:26:54.49756=SERVERTARGET95=3296=74c544ec967aae34fe84a30bae59520798=0108=3010=188
 
-##Status Code Table 
+##FIX is requesting a standard message header.
 
-| Code Number | Code Message                      |
-| ---- | ---------------------------------------- |
-| 1000 | success                                  |
-| 1001 | asynchronous success                     |
-| 2000 | system upgrading                         |
-| 2001 | system internal error                    |
-| 2002 | interface is unavailability              |
-| 2003 | request is too frequently                |
-| 2004 | fail to check sign                       |
-| 2005 | parameter is invalid                     |
-| 2006 | request failure                          |
-| 2007 | accesskey has been forbidden             |
-| 2008 | user not exist                           |
-| 3001 | account balance is not enough            |
-| 3002 | orderNo is not exist                     |
-| 3003 | price is invalid                         |
-| 3004 | symbol is invalid                        |
-| 3005 | quantity is invalid                      |
-| 3006 | ordertype is invalid                     |
-| 3007 | action is invalid                        |
-| 3008 | state is invalid                         |
-| 3009 | num is invalid                           |
-| 3010 | amount is invalid                        |
-| 3011 | cancel order failure                     |
-| 3012 | create order failure                     |
-| 3013 | orderList is invalid                     |
-| 3014 | symbol not trading                       |
-| 3015 | order amount or quantity less than min setting |
-| 3016 | price greater than max setting           |
-| 3017 | user account forbidden                   |
-| 3018 | order has execute                        |
-| 3019 | orderNo num is more than the max setting |
-| 3020 | price out of range                       |
-| 3021 | order has canceled                       |
-| 3027 | this symbol's API trading channel is not available |
+Hint: every request of interface must convey the correspondent parameters of the message. The definitions of interfaces and exemples of requests are listed as follows that may help to understand specific operation methods.
 
-# User Asset Queries
+| Field Name   | Field code | Type of Insertion | Discription                              |
+| ------------ | ---------- | ----------------- | ---------------------------------------- |
+| BeginString  | 8          | Compulsory        | The version of FIX Protocol  (Fixed value: FIX. 4.4) |
+| BodyLength   | 9          | Compulsory        | As to the length of any message,  the number of bytes should be stably controlled at the second field of the  whole message (unencrypted). |
+| MsgType      | 35         | Compulsory        | The type of request message.             |
+| MsgSeqNum    | 34         | Compulsory        | The series number of the  integral message (int message). |
+| SenderCompID | 49         | Compulsory        | $accesskey, acquired via API  activation. |
+| SendingTime  | 52         | Compulsory        | Request on sending the time (UTC  time). |
+| TargetCompID | 56         | Compulsory        | The signal of server, please  read the [login signature discription] above for references. |
 
-## Personal Asset Information
+## General Exceptions
 
-> Request Sample:
+| **Exception**                | Description                              |
+| ---------------------------- | ---------------------------------------- |
+| user not exist!              | Wrong TargetCompID                       |
+| has no authentication        | There is no corresponding API access     |
+| request too frequently       | Requests exceed the threshold            |
+| SendingTime accuracy problem | Client UTC time does not match server UTC time (Please compare it to UTC) |
+| system internal error        | system internal error                    |
 
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
+ Note: Exceptions are usually responded with "Reject". All APIs shall contain more detailed information.
+ 
+# Messages
 
-    }
-}
+## Logon
+
+Description:
+
+Logon Request (Keep-alive connection sessions are created upon successful logons, and other requests depend on successful logons)
+
+Request MsgType:
+
+```
+Logon
 ```
 
-> Response Sample:
+Logon
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
+API Request Parameters:
 
-            "timestamp":"1500000000000",
-            "result":{
-                        "userNo":"12345",
-                        "email":"demouser@demo.domain",
-                        "asset":{
-                                "USD":
-                                    {
-                                        "total":"123",
-                                        "available": "12"
-                                    },
-                                "BTC": 
-                                    {
-                                        "total":"1234",
-                                        "available": "123"
-                                    }
-                             }
-                    }
-            }
-}
+| **Parameter** | **Field Code** | **Mandatory** | Description                              |
+| ------------- | -------------- | ------------- | ---------------------------------------- |
+| SendingTime   | 52             | Yes           | Request delivery time (UTC time)         |
+| MsgType       | 35             | Yes           | Message type                             |
+| MsgSeqNum     | 34             | Yes           | Message sequence number                  |
+| SenderCompID  | 49             | Yes           | API user accessKey                       |
+| TargetCompID  | 56             | Yes           | For fixed parameters, please refer to values as described in the abovementioned \[parameter details\]. |
+| RawData       | 96             | Yes           | Logon parameter signature (for valid signatures, please refer to the abovementioned \[Logon Signature Generation Method\] |
+
+Response MsgType：
+
+```
+Logon
 ```
 
-Obtain your own personal asset information.
+Response Parameters:
 
-### Endpoint Path
+| **Parameter** | Field Code | **Description**                 |
+| ------------- | ---------- | ------------------------------- |
+| ClOrdID       | 11         | User's Account Number           |
+| OrderID       | 37         | User's e-mail address           |
+| ExecType      | 150        | System timestamp (Milliseconds) |
+| OrdStatus     | 39         | Return results                  |
+| TransactTime  | 60         | Total balance                   |
 
-`/api/v1/asset/userAssetInfo`
+Request Sample:
 
-### Endpoint Details
-
-`POST`
-
-### Request parameters
-
-    Only common parameters must be included.
-
-### Response Parameters
-
-| Parameter | Description           |
-| --------- | --------------------- |
-| userNo    | User's Account Number |
-| email     | User Email            |
-| timestamp | System Timestamp      |
-| result    | Return Results        |
-| total     | Total Balance         |
-| available | Available Balance     |       
-
-# Transactions
-
-## Place a Buy Order
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-        "orderType":"LMT",
-        "symbol":"ETC/BTC",
-        "priceLimit":"12345.67", 
-        "amount":"0",
-        "quantity":"2.34"
-    }
-}
+```
+8=FIX.4.49=11435=A34=249=zhangsan52=20190102-03:41:14.32956=COINSUPER95=3296=6cc719376923d980cbb5c882191d4e2898=0108=3010=058
 ```
 
-> Response Sample:
+Response Sample:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":{
-                        "orderNo":"2134123412" 
-                     }
-            }
-}
+```
+8=FIX.4.49=7235=A34=449=COINSUPER52=20190102-03:41:14.46156=zhangsan98=0108=3010=011
 ```
 
-Place a buy order.
+------
 
-### Endpoint Path
+## **1.2 Logout**
 
-`/api/v1/order/buy`
+Description:
 
-### Endpoint Details
+Upon initiation of Logout request, the keep-alive connection session will be closed.
 
-`POST`
+Request MsgType:
 
-### Request Parameters
-
-| Parameter        | Mandatory | Description                  |
-| ---------- | ---- | ------------------- |
-| symbol     | Yes   Transaction Pair Symbol                  |
-| priceLimit | Yes   Price Limit(String type)                 |
-| orderType  | Yes   Order Type MKT- "Market Price"，LMT- "Limit Price" |
-| quantity   | Yes   Buy Quantity(String type)                |
-| amount     | Yes   Amount(String type)                      |
-
-Explanation：
-1. If order type is LMT, the API will use "priceLimit" and "quantity". "amount" should be 
-equal to "0" and will not be used.
-2. If order type is MKT, the API will only use "amount". "priceLimit' and "quantity" should 
-be "0" and will not be used.
-
-###  Response Parameters
-
-| Parameter | Description     |
-| --------- | --------------- |
-| timestamp | Timestamp       |
-| result    | Results         |
-| orderNo   | Order Number ID |     
-
-
-## Place a Sell Order
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "orderType":"LMT",
-            "symbol":"ETC/BTC",
-            "priceLimit":"12345.67", 
-            "amount":"0",
-            "quantity":"2.34"
-    }
-}
+```
+Logout
 ```
 
-> Response Sample:
+API Request Parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":{
-                        "orderNo":"2134123412"
-                     }
-           }
-}
+None
+
+Response MsgType:
+
+```
+Logout
 ```
 
-Place a sell order.
+Response Parameters:
 
-### Endpoint Path
+None
 
-`/api/v1/order/sell`
+Request Sample:
 
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter  | Mandatory | Description                              |
-| ---------- | --------- | ---------------------------------------- |
-| symbol     | Yes       | Transaction Pair Symbol                  |
-| priceLimit | Yes       | Price Limit(String type)                 |
-| orderType  | Yes       | Order Type MKT- "Market Price"，LMT- "Limit Price" |
-| quantity   | Yes       | Buy Quantity(String type)                |
-| amount     | Yes       | Amount(String type)                      |
-
-
-###  Response Parameters
-
-| Parameter | Description     |
-| --------- | --------------- |
-| timestamp | Timestamp       |
-| result    | Results         |
-| orderNo   | Order Number ID |
-
-
-
-## Cancel Order
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "orderNo":"12341235123412"
-    }
-}
+```
+8=FIX.4.49=11435=534=249=zhangsan52=20190102-03:41:14.32956=COINSUPER95=3296=6cc719376923d980cbb5c882191d4e2898=0108=3010=058
 ```
 
-> Response Sample:
+Response Sample:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":{
-                        "operate":"success"
-                     }
-            }
-}
+```
+8=FIX.4.49=7235=534=449=COINSUPER52=20190102-03:41:14.46156=zhangsan98=0108=3010=011
 ```
 
-Cancel a previously placed order.
+------
 
-### Endpoint Path
+## 1.3 Heartbeat
 
-`/api/v1/order/cancel`
+Description:
 
-### Endpoint Details
+Heartbeat requests are delivered for a fixed time, which aims to maintain keep-alive connection sessions.
 
-`POST`
+Request MsgType:
 
-### Request Parameters
-
-| Parameter | Mandatory | Description     |
-| --------- | --------- | --------------- |
-| orderNo   | Yes       | Order Number ID |
-
-
-###  Response Parameters
-
-| Parameter | Description                              |
-| --------- | ---------------------------------------- |
-| timestamp | Timestamp                                |
-| result    | Results                                  |
-| operate   | Result Description : "success" or "failure" |
-
-
-## Batch Cancellation of Orders
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "orderNoList":"1612930403329875969,1612930403329875970"
-    }
-}
+```
+Heartbeat
 ```
 
-> Response Sample:
+API Request Parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":{
-                        "failResultList": [
-                            {
-                                "errMsg": "orderNo is invalid",
-                                "orderNo": "1612930403329875969"
-                            }
-                        ],
-                        "successNoList": ["1612930403329875970"]
-                     }
-            }
-}
+None
+
+Response MsgType:
+
+```
+Heartbeat
 ```
 
-User Cancels Orders
+Response Parameters:
 
-### Endpoint Path
+None
 
-`/api/v1/order/batchCancel`
+Request Sample:
 
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter     | Mandatory | Description       |
-| ------- | ---- | -------- |
-| orderNoList | Yes   | Order Number to Cancel|
-
-###  Response Parameters
-
-| Parameter | Description                              |
-| --------- | ---------------------------------------- |
-| timestamp | System Timestamp (ms)                    |
-| result    | Return Result                            |
-| operate   | Result Description : "success" or "failure" |
-
-
-## Return Order List
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "orderNoList":"1612930403329875969,1612930403329875970"
-    }
-}
+```
+8=FIX.4.49=6035=034=349=zhangsan52=20190102-07:31:01.57256=COINSUPER10=223
 ```
 
-> Response Sample:
+Response Sample:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":1500000000123,
-            "result":[ 
-                        {
-                            "orderNo":"1612930403329875969",                 
-                            "action":"SELL",                     
-                            "orderType":"MKT",                  
-                            "priceLimit":"0.00000000",           
-                            "symbol":"ETC/BTC",                  
-                            "quantity" :"0.00010000",            
-                            "quantityRemaining":"0.00010000",    
-                            "amount":"0.00000000",               
-                            "amountRemaining":"0.00000000",      
-                            "fee":"0.00000000",                  
-                            "utcUpdate":"1500000000000",         
-                            "utcCreate":"1500000000000",         
-                            "state":"CANCEL"                  
-                        },
-                        {
-                            "orderNo":"1612930403329875970",                 
-                            "action":"SELL",                     
-                            "orderType":"MKT",                  
-                            "priceLimit":"0.00000000",           
-                            "symbol":"ETC/BTC",                  
-                            "quantity" :"0.00010000",            
-                            "quantityRemaining":"0.00010000",    
-                            "amount":"0.00000000",               
-                            "amountRemaining":"0.00000000",      
-                            "fee":"0.00000000",                  
-                            "utcUpdate":"1500000000000",         
-                            "utcCreate":"1500000000000",         
-                            "state":"CANCEL"                  
-                        }
-                    ]
-            }
-}
+```
+8=FIX.4.49=6235=034=46349=COINSUPER52=20190102-07:31:01.69056=zhangsan10=076
 ```
 
-Obtain a list of order information (maximum 50 at one time). The user passes in the Order IDs for the orders they wish to check.
-
-### Endpoint Path
-
-`/api/v1/order/list`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter   | Mandatory | Description                              |
-| ----------- | --------- | ---------------------------------------- |
-| orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
-
-###  Response Parameters
-
-| Parameter         | Description                              |
-| ----------------- | ---------------------------------------- |
-| timestamp         | Timestamp                                |
-| result            | Results                                  |
-| orderNo           | Order Number                             |
-| action            | Order Type (Buy/Sell)                    |
-| orderType         | Order Sub-type MKT-Market Price，LMT-Limit Price |
-| priceLimit        | Price Limit                              |
-| state             | Order Status  UNDEAL:Not Executed，PARTDEAL:Partially Executed，DEAL:Order Complete，CANCEL: Canceled |
-| quantity          | Order Quantity                           |
-| quantityRemaining | Remaining Quantity                       |
-| amount            | Order Amount                             |
-| amountRemaining   | Remaining Amount                         |
-| fee               | Transaction Fee                          |
-| symbol            | Trade Pair                               |
-| utcUpdate         | Timestamp of Last Transaction            |
-| utcCreate         | Timestamp on Order Creation              |
+------
 
 
-## Return Detailed Order List
+## **2.1 Order Creation**
 
-> Request Sample:
+Description:
 
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "orderNoList":"1612930403329875969,1612930403329875970"
-    }
-}
+Transaction Order Creation Request
+
+Request MsgType:
+
+```
+NewOrderSingle
 ```
 
-> Response Sample:
+API Request Parameters:
 
-```json
-{
-    "code":1000,
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000",
-            "result":[
-                        { 
-                                    "orderNo":"1612930403329875969",                     
-                                    "priceLimit": "0.00000000",                
-                                    "quantity": "1.00000000",                  
-                                    "symbol":"ETC/BTC",                        
-                                    "action":"SELL",                           
-                                    "orderType":"MKT",                         
-                                    "fee":"0.23",                              
-                                    "quantityRemaining": "0.00000000",         
-                                    "amount": "0.00000000",                    
-                                    "amountRemaining": "0.00000000",           
-                                    "state":"DEAL",                           
-                                    "detail":[
-                                                {
-                                                    "matchType":"MAKER",        
-                                                    "price": "0.00213640",       
-                                                    "volume": "0.42220000",       
-                                                    "utcDeal":"123123412",       
-                                                    "fee":"0.01",              
-                                                    "feeCurrency":"BTC"        
-                                                },
-                                               {
-                                                 "matchType":"MAKER",        
-                                                 "price": "0.00213640",       
-                                                 "volume": "0.42220000",       
-                                                 "utcDeal":"123123412",       
-                                                 "fee":"0.01",              
-                                                 "feeCurrency":"BUC"        
-                                               } 
-                                            ]    
-                        },
-                        { 
-                        "orderNo":"1612930403329875969",                     
-                        "priceLimit": "0.00000000",                
-                        "quantity": "1.00000000",                  
-                        "symbol":"ETC/BTC",                        
-                        "action":"SELL",                           
-                        "orderType":"MKT",                         
-                        "fee":"0.23",                              
-                        "quantityRemaining": "0.00000000",         
-                        "amount": "0.00000000",                    
-                        "amountRemaining": "0.00000000",           
-                        "state":"DEAL",                           
-                        "detail":[
-                                    {
-                                        "matchType":"MAKER",        
-                                        "price": "0.00213640",       
-                                        "volume": "0.42220000",       
-                                        "utcDeal":"123123412",       
-                                        "fee":"0.01",              
-                                        "feeCurrency":"BTC"        
-                                    },
-                                   {
-                                     "matchType":"MAKER",        
-                                     "price": "0.00213640",       
-                                     "volume": "0.42220000",       
-                                     "utcDeal":"123123412",       
-                                     "fee":"0.01",              
-                                     "feeCurrency":"BUC"        
-                                   } 
-                                ]    
-                        }
-                    ]
-            }
-}
+| **Parameter** | **Field Code** | **Mandatory** | **Description**                          |
+| ------------- | -------------- | ------------- | ---------------------------------------- |
+| ClOrdID       | 11             | Yes           | Customized order ID from the client-side (cannot repeat) |
+| Symbol        | 55             | Yes           | Trading pairs                            |
+| Price         | 44             | Yes           | Trading price limit (which is exclusive for price limit orders, and the market price should be 0) |
+| Side          | 54             | Yes           | Purchase and sales type (Buy (1)= place a buy order, SELL (2)=place a sell order) |
+| OrdType       | 40             | Yes           | Order type (MARKET (1)=market price, and LIMIT (2) = limit price) |
+| OrderQty      | 38             | Yes           | Quantity of target tokens (used for purchases and sales at limit prices or sales at market prices. Please input "0" for purchases at market prices) |
+| CashOrderQty  | 152            | Yes           | Quantity of valued tokens (used for purchases at market prices. Please input "0" in case of purchases and sales at limit prices or sales at market prices) |
+| TransactTime  | 60             | Yes           | Request time (UTC time)                  |
+
+```
+Additional Parameter Descriptions:
+
+For BTC/USD trading pairs, see the sample below regarding OrderQty and Amount:
+
+Buy 0.1 BTC at the limit price of USD 6300:
+Symbol=BTC/USD, Side=1, OrdType=2, Price=6300, OrderQty=0.1, CashOrderQty=0;
+
+Sell 0.2 BTC at the limit price of USD 6301:
+Symbol=BTC/USD, Side=2, OrdType=2, Price=6300, OrderQty=0.2, CashOrderQty=0;
+
+Buy BTC at the market price of USD 500:
+Symbol=BTC/USD, Side=1, OrdType=1, Price=0, OrderQty=0, CashOrderQty=500;
+
+Sell 0.5 BTC at the market price:
+Symbol=BTC/USD, Side=2, OrdType=1, Price=0, OrderQty=0.5, CashOrderQty=0;
 ```
 
-Returns a list of information for up to 50 Orders. This information is more detailed than 2.4 
-and includes individual transactions related to the order.
+Response MsgType:
 
-### Endpoint Path
-
-`/api/v1/order/details`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter   | Mandatory | Description                              |
-| ----------- | --------- | ---------------------------------------- |
-| orderNoList | Yes       | Pass in comma separated order numbers. Maximum 50 at one time. |
-
-###  Response Parameters
-
-| Parameter         | Description                              |
-| ----------------- | ---------------------------------------- |
-| timestamp         | Timestamp                                |
-| result            | Results                                  |
-| orderNo           | Order Number                             |
-| priceLimit        | Price Limit                              |
-| price             | Transaction Price                        |
-| quantity          | Order Quantity                           |
-| quantityRemaining | Remaining Quantity                       |
-| amount            | Order Amount                             |
-| amountRemaining   | Remaining Amount                         |
-| volume            | Volume of Transaction                    |
-| action            | Order Type (Buy/Sell)                    |
-| orderType         | Order Sub-type MKT-Market Price，LMT-Limit Price |
-| fee               | Transaction Fee                          |
-| feeCurrency       | Transaction Fee Currency                 |
-| state             | Order Status  UNDEAL:Not Executed，PARTDEAL:Partially Executed，DEAL:Order Complete，CANCEL: Canceled |
-| matchType         | Transaction Type：MAKER-Passive Match，TAKER-Active Match |
-| symbol            | Trade Pair                               |
-| detail            | Detailed Transaction Information         |
-| utcDeal           | Timestamp of Transaction                 |
-
-
-## Pending Order List
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC",                
-            "num":"1000"		
-    }
-}
+```
+ExecutionReport
 ```
 
-> Response Sample:
+Response Parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":[
-                  "1603147161792831491",
-                  "1603147093327106049",
-                  "1603147072028430337"
-             ]
-    }
-}
+| **Parameter** | Field Code | **Description**                          |
+| ------------- | ---------- | ---------------------------------------- |
+| ClOrdID       | 11         | Customized order ID from the client-side |
+| OrderID       | 37         | Order ID generated from the server-side  |
+| ExecType      | 150        | Execution results (fixed as NEW)         |
+| OrdStatus     | 39         | Order status (fixed as NEW)              |
+| TransactTime  | 60         | Delivery time of response messages (UTC time) |
+
+Request Sample：  
+
+```
+8=FIX.4.49=16735=D34=3249=zhangsan52=20190104-10:08:43.31456=COINSUPER11=ord000138=0.340=244=450054=255=BTC/USD60=20190104-18:08:43.308152=010=091
 ```
 
-Obtain a list of pending orders (up to 1000) for a trade pair.
+ Response Sample: 
 
-### Endpoint Path
-
-`/api/v1/order/openList`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter | Mandatory | Description                              |
-| --------- | --------- | ---------------------------------------- |
-| symbol    | No        | Trade Pair (Querries all Trade Pairs if unfilled) |
-| num       | Yes       | Number of results to return (Max 1000)   |
-
-###  Response Parameters
-
-| Parameter | Description                |
-| --------- | -------------------------- |
-| timestamp | Timestamp                  |
-| result    | Results, List of order IDs |
-
-
-## Query Personal Order History
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC",                   
-            "utcStart":"1536818874583",          
-            "withTrade":"true"         
-    }
-}
+```
+8=FIX.4.49=22335=834=18349=COINSUPER52=20190104-10:08:42.34256=zhangsan6=014=017=a0cbfd23455e4b6faaacbe5fb36caf9920=037=162172399493790924939=054=255=BTC/USD60=20190104-18:08:42.341150=0151=0.310=036
 ```
 
-> Response Sample:
+| **Exception**                            | **Description**                          |
+| ---------------------------------------- | ---------------------------------------- |
+| symbol not trading                       | Trading pairs are not availablefortrading |
+| order amount or quantity less than min setting | The trading quantity/amount is lower than the minimum requirement |
+| tprice out of range                      | The price exceeds the range              |
+| action not support                       | It does not support such transaction type |
+| order type not support                   | It does not support such order type      |
+| user account forbidden                   | The account is forbidden from trading    |
+| balance not enough                       | The balance is insufficient              |
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":1500000000123,
-            "result":[ 
-                        {
-                            "orderNo":"123412313",             
-                            "action":"SELL",                   
-                            "orderType":"MKT",                  
-                            "priceAverage": "0.00000000",
-                            "priceLimit":"0.00000000",         
-                            "symbol":"ETC/BTC",                  
-                            "quantity" :"0.00010000",           
-                            "quantityRemaining":"0.00010000",   
-                            "amount":"0.00000000",               
-                            "amountRemaining":"0.00000000",     
-                            "fee":"0.00000000",                 
-                            "utcUpdate":"1500000000000",        
-                            "utcCreate":"1500000000000",          
-                            "state":"CANCEL",                  
-                            "detail": [
-                                  {
-                                      "dealNo": "234234114241",
-                                      "matchType": "ACTIVE",
-                                      "price": "0.00001000",
-                                      "utcDeal": "1500000000000",
-                                      "volume": "1.4266",
-                                      "fee":"0.01",
-                                      "feeCurrency":"BTC"
-                                  },
-                                  {
-                                      "dealNo": "24234212312",
-                                      "matchType": "PASSIVE",
-                                      "price": "0.00001000",
-                                      "utcDeal": "1500000000000",
-                                      "volume": "0.00001000",
-                                      "fee":"0.01",
-                                      "feeCurrency":"BTC"
-                                  }
-                              ]
-                        }
-                    ]
-            }
-}
+------
+
+## 2.2 Order Cancellation
+
+Description:
+
+Transaction Order Cancellation Requests
+
+Request MsgType:
+
+```
+OrderCancelRequest
 ```
 
-Request Personal Order History
+API Request Parameters:
 
-### Endpoint Path
+| **Parameter** | Field Code | **Mandatory** | **Description**                         |
+| ------------- | ---------- | ------------- | --------------------------------------- |
+| OrderID       | 37         | Yes           | Order ID generated from the server-side |
 
-`/api/v1/order/history`
+Response MsgType:
 
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter    | Mandatory | Description                              |
-| ------------ | --------- | ---------------------------------------- |
-| symbol       | Yes       | Trade Pair                               |
-| utcStart     | Yes       | Query Start Time (≤ order creation time in the results, timestamps in ms) |
-| utcEnd       | NO        | Query End Time ( ≥ order creation time in the results, timestamps in ms) |
-| startOrderNo | NO        | Start Order Number (Its data are excluded from the query results. If it is not passed, the first page of data will be queried. ) |
-| withTrade    | NO        | Return the Transaction Details of Corresponding Orders or Not (true-Return, false-Not Return (in lower case)) |
-| size         | NO        | Number of Results (temporarily limited to 1-100) |
-
-###  Response Parameters
-
-| Parameter         | Description                              |
-| ----------------- | ---------------------------------------- |
-| timestamp         | Timestamp (ms)                           |
-| result            | Return Result                            |
-| orderNo           | Order No.                                |
-| action            | Order Type SELL-Sell/BUY-Buy             |
-| orderType         | Order Sub-type  MKT-Market Price, LMT-Limit Price |
-| priceLimit        | Price Limit                              |
-| priceAverage      | Average Transaction Price                |
-| state             | Order State  UNDEAL: Not Executed，PARTDEAL: Partially Executed，DEAL: Order Complete，CANCEL: Cancelled |
-| quantity          | Order Quantity                           |
-| quantityRemaining | Remaining Quantity                       |
-| amount            | Order Amount                             |
-| amountRemaining   | Remaining Amount                         |
-| fee               | Transaction Fee                          |
-| feeCurrency       | Transaction Fee Currency                 |
-| symbol            | Trade Pair                               |
-| utcUpdate         | Timestamp of Last Transaction (ms)       |
-| utcCreate         | Timestamp on Order Creation (ms)         |
-| detail            | Transaction Details                      |
-| matchType         | Transaction Type: PASSIVE-Passive Match，ACTIVE-Active Match |
-| dealNo            | Transaction Number                       |
-| volume            | Transaction Volume                       |
-| price             | Transaction Price                        |
-| utcDeal           | Transaction Timestamp (ms)               |
-
-
-## Query Personal Trade History
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC",                   
-            "utcStart":"1536818874583",          
-            "withTrade":"true"         
-    }
-}
+```
+ExecutionReport
 ```
 
-> Response Sample:
+Response Parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp": "1500000000",
-            "result":[ 
-                        {
-                          "dealNo":"12312312312312",   
-                          "symbol": "BTC/USD",        
-                          "matchType":"PASSIVE",       
-                          "orderNo":"32423412412",      
-                          "orderType":"MKT",           
-                          "action":"SELL",              
-                          "price": "0.00213640",      
-                          "volume": "0.42220000",     
-                          "utcDeal": "123123412",    
-                          "fee":"0.01",				  
-                          "feeCurrency":"USD"		   
-                        }
-                    ]
-            }
-}
+| Parameter    | Field Code | **Description**                          |
+| ------------ | ---------- | ---------------------------------------- |
+| OrderID      | 37         | Order ID generated from the server-side  |
+| ExecType     | 150        | Execution results (order cancellation in progress: PENDING\_CANCEL) |
+| OrdStatus    | 39         | Order status (order cancellation in progress: PENDING\_CANCEL) |
+| TransactTime | 60         | Delivery time of response messages (UTC time) |
+
+Request Sample:  
+
+```
+8=FIX.4.49=11235=F34=6549=zhangsan52=20190104-09:40:25.49556=COINSUPER37=162172076101837209710=112
 ```
 
-Request Personal Trade History
+ Responce Sample: 
 
-### Endpoint Path
-
-`/api/v1/order/tradeHistory`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| FieldName   | Mandatory | Description                              |
-| ----------- | --------- | ---------------------------------------- |
-| utcStart    | Yes       | Query Start Time (≤ order creation time in the results, timestamps in ms) |
-| symbol      | NO        | Trade Pair                               |
-| utcEnd      | NO        | Query End Time ( ≥ order creation time in the results, timestamps in ms) |
-| startDealNo | NO        | Start Transaction Number (Its data are excluded from the query results. If it is not passed, the first page of data will be queried.) |
-| size        | NO        | Number of Results (When the last result has the same order number as the size+1 result, return the size+1 result and show size+1 results) |
-###  Response Parameters
-
-| Parameter   | Description                              |
-| ----------- | ---------------------------------------- |
-| timestamp   | Timestamp (ms)                           |
-| result      | Return Result                            |
-| orderNo     | Order Number                             |
-| action      | Order Type SELL-Sell/BUY-Buy             |
-| orderType   | Order Sub-type  MKT-Market Price, LMT-Limit Price |
-| symbol      | Trade Pair                               |
-| matchType   | Transaction Type: PASSIVE-Passive Match，ACTIVE-Active Match |
-| dealNo      | Transaction Number                       |
-| volume      | Transaction Volume                       |
-| price       | Transaction Price                        |
-| fee         | Transaction Fee                          |
-| feeCurrency | Transaction Fee Currency                 |
-| utcDeal     | Transaction Timestamp (ms)               |
-
-
-
-#Quotes
-
-## Detailed Market Quote (10%)
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC"          
-    }
-}
+```
+8=FIX.4.49=15435=834=12749=COINSUPER52=20190104-09:40:24.38956=zhangsan20=137=162172076101837209739=460=20190104-17:40:24.389150=410=041
 ```
 
-> Response Sample:
+Upon failures due to various reasons, values shall be obtained from the response parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-        "timestamp":"1500000000000",
-        "result":{
-                    "asks":[
-                        {
-                          "limitPrice":"123.000000000000000000000000000000",
-                          "quantity":"15.990000000000000000000000000000"
-                        }
-                    ],
-                    "bids":[
-                        {
-                          "limitPrice":"621.000000000000000000000000000000",
-                          "quantity":"0.110000000000000000000000000000"
-                        }
-                    ]
-                   }
-    }
-}
+| **Exception**      | Description                      |
+| ------------------ | -------------------------------- |
+| order no not exist | There exists no unfinished order |
+| order has canceled | The order has been canceled      |
+| order has execute  | The order has been completed     |
+
+-------------------- -----------------------------------
+####3. Query Type
+
+##### **3.1 Queries into Unfinished Orders**
+
+Description:
+
+Queries are made into partially executed and in-progress orders
+
+Request MsgType:
+
+```
+OrderStatusRequest
 ```
 
-Obtain top 10% bids and asks for a trade pair.
+API Request Parameters:
 
-### Endpoint Path
+| Parameter | Field Code | Mandatory | Description                              |
+| --------- | ---------- | --------- | ---------------------------------------- |
+| OrderID   | 37         | Yes       | Order ID generated from the server-side (\* indicates that queries are made into the latest 20 order entries) |
 
-`/api/v1/market/depth`
+Response MsgType:
 
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter | Mandatory | Description |
-| --------- | --------- | ----------- |
-| symbol    | Yes       | Trade Pair  |
-
-###  Response Parameters
-
-| Parameter  | Description       |
-| ---------- | ----------------- |
-| timestamp  | Timestamp         |
-| result     | Results           |
-| asks       | Ask Offers        |
-| bids       | Bid Offers        |
-| limitPrice | Price Limit       |
-| quantity   | Quantity on Offer |
-
-
-## Detailed Market Quote (1-50)
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC",                 
-            "num":"50"            
-    }
-}
+```
+ExecutionReport
 ```
 
-> Response Sample:
+Response Parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-        "timestamp":"1500000000000",
-        "result":{
-                    "asks":[{"limitPrice":"123.00000000","quantity":"161.1300"}],
-                    "bids":[{"limitPrice":"86.06000000","quantity":"0.7800"}]
-                   }
-    }
-}
+| **Parameter** | Field Code | **Description**                          |
+| ------------- | ---------- | ---------------------------------------- |
+| OrderID       | 37         | Order ID generated from the server-side  |
+| Side          | 54         | Purchase and sales type (Buy (1)= place a buy order, SELL (2)=place a sell order) |
+| ExecType      | 150        | Execution results (ORDER\_STATUS)        |
+| OrdStatus     | 39         | Order status (PENDING\_NEW/PARTIALLY\_FILLED) |
+| AvgPx         | 6          | Average transaction price per order      |
+| CumQty        | 14         | Quantity of completed transactions       |
+| LeavesQty     | 151        | Quantity of remaining unfinished transactions (CumQty+LeavesQty= total order quantity) |
+| Symbol        | 55         | Trading pairs                            |
+| TransactTime  | 60         | Delivery time of response messages (UTC time) |
+
+Request Sample:
+
+```
+8=FIX.4.49=11235=H34=1849=zhangsan52=20190104-10:01:52.86256=COINSUPER37=162172183852353945710=111
 ```
 
-Return top 1-50 asks and bids for a trade pair.
+ Response Sample: 
 
-### Endpoint Path
-
-`/api/v1/market/orderBook`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter | Mandatory | Description                 |
-| --------- | --------- | --------------------------- |
-| num       | Yes       | Number of results to return |
-| symbol    | Yes       | Trade Pair                  |
-
-###  Response Parameters
-
-| Parameter  | Description       |
-| ---------- | ----------------- |
-| timestamp  | Timestamp         |
-| result     | Results           |
-| asks       | Ask Offers        |
-| bids       | Bid Offers        |
-| limitPrice | Price Limit       |
-| quantity   | Quantity on Offer |
-
-
-## Real Time Price Quotes
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC",                 
-            "num":"50"            
-    }
-}
+```
+8=FIX.4.49=22335=834=16949=COINSUPER52=20190104-10:01:51.70456=dba8ef1f-6e3f-43ed-ae67-0668c3e933636=014=017=37e01f58367948fdaedf8dace2ea62ff20=337=162172183852353945739=A54=255=BTC/USD60=20190104-18:01:51.704150=I151=0.210=199
 ```
 
-> Response Sample:
+Upon failures due to various reasons, values shall be obtained from the response parameters:
 
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":[
-                            {
-                              "close": "0.00205900",
-                              "high": "0.00206080",
-                              "low": "0.00205340",
-                              "open": "0.00205660",
-                              "volume": "100.1218",
-                              "timestamp": "1500000000000"
-                            },
-                            {
-                              "close": "0.00205900",
-                              "high": "0.00206080",
-                              "low": "0.00205340",
-                              "open": "0.00205660",
-                              "volume": "100.1218",
-                              "timestamp": "1500000000000"
-                            }
-                      ]
-            }
-}
-```
-
-Returns 5 minutes of "kline" data for a trade pair (Up to 300 latest data points in 5 minute increments.)
-
-### Endpoint Path
-
-`/api/v1/market/kline`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter | Mandatory | Description                              |
-| --------- | --------- | ---------------------------------------- |
-| symbol    | Yes       | Trade Pair                               |
-| num       | Yes       | Data Point Count                         |
-| range     | No        | Kline range(available values:5min,15min,30min,1hour,6hour,12hour,1day),default value:5min |
-
-###  Response Parameters
-
-| Parameter | Description   |
-| --------- | ------------- |
-| timestamp | Timestamp     |
-| result    | Results       |
-| volume    | Volume Traded |
-| high      | Highest Price |
-| low       | Lowest Price  |
-| open      | Opening Price |
-| close     | Closing Price |
-
-
-## Real-Time Transaction Quotes
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-            "symbol":"ETC/BTC"          
-    }
-}
-```
-
-> Response Sample:
-
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":[
-                  {
-                  "price": "0.00212320",
-                  "tradeType": "SELL",
-                  "volume": "0.3499",
-                  "timestamp": "1500000000000"
-                  },
-                  {
-                  "price": "0.00212320",
-                  "tradeType": "SELL",
-                  "volume": "0.3499",
-                  "timestamp": "1500000000000"
-                  }
-             ]
-    }
-}
-```
-
-Return 50 of the latest transactions for a currency pair.
-
-### Endpoint Path
-
-`/api/v1/market/tickers`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-| Parameter | Mandatory | Description |
-| --------- | --------- | ----------- |
-| symbol    | Yes       | Trade Pair  |
-
-###  Response Parameters
-
-| Parameter | Description                         |
-| --------- | ----------------------------------- |
-| timestamp | Timestamp                           |
-| result    | Results                             |
-| volume    | Volume Traded                       |
-| dealTime  | Transaction Timestamp               |
-| price     | Transaction Price                   |
-| action    | Order Type (BUY - Buy, SELL - Sell) |
-
-
-
-## Supported Currency Pairs List
-
-> Request Sample:
-
-```json
-{
-    "common":{
-        "accesskey" : "1900000109",           
-        "timestamp": "1500000000000",            
-        "sign":"sdfsdfa1231231sdfsdfsd"        
-    },
-    "data":{
-                
-    }
-}
-```
-
-> Response Sample:
-
-```json
-{
-    "code":"1000",
-    "msg":"success",
-    "data":{
-            "timestamp":"1500000000000",
-            "result":[
-                {
-                  "symbol": "BTC/USD",						
-                  "quantityMin": "0.00100000000",		
-                  "quantityMax": "5000.00000000000",
-                  "priceMin": "0.00100000000",			
-                  "priceMax": "9999.00000000000",		
-                  "deviationRatio": "0.3"				    
-            	},
-              	{
-                  "symbol": "ETH/BTC",						
-                  "quantityMin": "0.00001000000",		
-                  "quantityMax": "8000.00000000000",
-                  "priceMin": "0.00001000000",			
-                  "priceMax": "8000.00000000000",		
-                  "deviationRatio": "0.3"					
-            	}
-             ]
-    }
-}
-```
-
-Returns a list of all supported currency pairs, as well as some currency pair specific trading information.
-
-### Endpoint Path
-
-`/api/v1/market/symbolList`
-
-### Endpoint Details
-
-`POST`
-
-### Request Parameters
-
-Only uses common parameters.
-
-###  Response Parameters
-
-| Parameter      | Description                              |
-| -------------- | ---------------------------------------- |
-| timestamp      | Timestamp                                |
-| result         | Results                                  |
-| symbol         | Trade Pair                               |
-| quantityMin    | Minimum Transaction Quantity             |
-| quantityMax    | Maximum Transaction Quantity             |
-| priceMin       | Minimum Transaction Price                |
-| priceMax       | Maximum Transaction Price                |
-| deviationRatio | Maximum Deviation Ratio in Transaction Price |
+| **Exception**      | **Description**                  |
+| ------------------ | -------------------------------- |
+| order no not exist | There exists no unfinished order |
