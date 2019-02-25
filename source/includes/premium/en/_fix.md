@@ -7,7 +7,7 @@
 -   API access portal: 1443
 -   API access protocol: TCP(SSL)
 
-###API Specifications
+###FIX  Specifications
 
 -   Access using the SSL socket keep-alive connection.
 
@@ -21,7 +21,7 @@
 
 -   Log-on is required for API calls. For log-on methods and parameters, please refer to the following parameter list.
 
-###POST Body Format
+###Data Format Definition
 
 1. Parameter Descriptions:
   1.1 Request Parameters:
@@ -62,7 +62,7 @@ $accessKey and $secretKey are acquired by API access.
 
 [Get API Access](https://premium-exp.coinsuper.com)
 
-###Signature Generation Sample 
+###Examples of signature generation(A)
 
 Our API requires a signature to be generated, to verify that information has not been tampered 
 with or falsified by bad actors.
@@ -73,7 +73,7 @@ a. Sort all request parameters along with "accesskey" and "secretkey" according 
 
 b. Apply MD5 encryption to the string. The final 32 bits will become the sign: XXXXXXXXXX...;
 
-###Signature Generation Sample
+###Examples of signature generation(B)
 
 
 Let us suppose there is a request with these parameters, among which,

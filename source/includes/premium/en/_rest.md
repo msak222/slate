@@ -67,7 +67,7 @@
    request, "code" should be equal to "1000". If the code is not "1000", refer to the provided 
    table to find out what exception has occurred.
 
-2.业务参数精度：
+2.Quotation Accuracy：
    
     2.1 For crypto-crypto transactions, the price is accurate to 8 decimal places. quantity is 
         accuate to 4 decimal places.
