@@ -14,5 +14,5 @@ search: true
 
 # Introduce
 
-Coinsuper  API iis an interface provided by Coinsuper for external developers.
+Coinsuper  API is an interface provided by Coinsuper for external developers.
 
