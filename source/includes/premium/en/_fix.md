@@ -131,9 +131,7 @@ Logon Request (Keep-alive connection sessions are created upon successful logons
 
 Request MsgType:
 
-```
-Logon
-```
+`Logon`
 
 Logon
 
@@ -150,9 +148,9 @@ API Request Parameters:
 
 Response MsgType：
 
-```
-Logon
-```
+
+`Logon`
+
 
 Response Parameters:
 
@@ -164,13 +162,13 @@ Response Parameters:
 | OrdStatus     | 39         | Return results                  |
 | TransactTime  | 60         | Total balance                   |
 
-Request Sample:
+>Request Sample:
 
 ```
 8=FIX.4.49=11435=A34=249=zhangsan52=20190102-03:41:14.32956=COINSUPER95=3296=6cc719376923d980cbb5c882191d4e2898=0108=3010=058
 ```
 
-Response Sample:
+>**Response Sample:
 
 ```
 8=FIX.4.49=7235=A34=449=COINSUPER52=20190102-03:41:14.46156=zhangsan98=0108=3010=011
@@ -186,9 +184,7 @@ Upon initiation of Logout request, the keep-alive connection session will be clo
 
 Request MsgType:
 
-```
-Logout
-```
+`Logout`
 
 API Request Parameters:
 
@@ -196,21 +192,19 @@ None
 
 Response MsgType:
 
-```
-Logout
-```
+`Logout`
 
 Response Parameters:
 
 None
 
-Request Sample:
+>Request Sample:
 
 ```
 8=FIX.4.49=11435=534=249=zhangsan52=20190102-03:41:14.32956=COINSUPER95=3296=6cc719376923d980cbb5c882191d4e2898=0108=3010=058
 ```
 
-Response Sample:
+>Response Sample:
 
 ```
 8=FIX.4.49=7235=534=449=COINSUPER52=20190102-03:41:14.46156=zhangsan98=0108=3010=011
@@ -226,9 +220,7 @@ Heartbeat requests are delivered for a fixed time, which aims to maintain keep-a
 
 Request MsgType:
 
-```
-Heartbeat
-```
+`Heartbeat`
 
 API Request Parameters:
 
@@ -236,21 +228,19 @@ None
 
 Response MsgType:
 
-```
-Heartbeat
-```
+`Heartbeat`
 
 Response Parameters:
 
 None
 
-Request Sample:
+>Request Sample:
 
 ```
 8=FIX.4.49=6035=034=349=zhangsan52=20190102-07:31:01.57256=COINSUPER10=223
 ```
 
-Response Sample:
+>Response Sample:
 
 ```
 8=FIX.4.49=6235=034=46349=COINSUPER52=20190102-07:31:01.69056=zhangsan10=076
@@ -267,9 +257,7 @@ Transaction Order Creation Request
 
 Request MsgType:
 
-```
-NewOrderSingle
-```
+`NewOrderSingle`
 
 API Request Parameters:
 
@@ -304,9 +292,7 @@ Symbol=BTC/USD, Side=2, OrdType=1, Price=0, OrderQty=0.5, CashOrderQty=0;
 
 Response MsgType:
 
-```
-ExecutionReport
-```
+`ExecutionReport`
 
 Response Parameters:
 
@@ -318,13 +304,13 @@ Response Parameters:
 | OrdStatus     | 39         | Order status (fixed as NEW)              |
 | TransactTime  | 60         | Delivery time of response messages (UTC time) |
 
-Request Sample：  
+>Request Sample：  
 
 ```
 8=FIX.4.49=16735=D34=3249=zhangsan52=20190104-10:08:43.31456=COINSUPER11=ord000138=0.340=244=450054=255=BTC/USD60=20190104-18:08:43.308152=010=091
 ```
 
- Response Sample: 
+>Response Sample: 
 
 ```
 8=FIX.4.49=22335=834=18349=COINSUPER52=20190104-10:08:42.34256=zhangsan6=014=017=a0cbfd23455e4b6faaacbe5fb36caf9920=037=162172399493790924939=054=255=BTC/USD60=20190104-18:08:42.341150=0151=0.310=036
@@ -350,9 +336,7 @@ Transaction Order Cancellation Requests
 
 Request MsgType:
 
-```
-OrderCancelRequest
-```
+`OrderCancelRequest`
 
 API Request Parameters:
 
@@ -362,9 +346,7 @@ API Request Parameters:
 
 Response MsgType:
 
-```
-ExecutionReport
-```
+`ExecutionReport`
 
 Response Parameters:
 
@@ -375,13 +357,13 @@ Response Parameters:
 | OrdStatus    | 39         | Order status (order cancellation in progress: PENDING\_CANCEL) |
 | TransactTime | 60         | Delivery time of response messages (UTC time) |
 
-Request Sample:  
+>Request Sample:  
 
 ```
 8=FIX.4.49=11235=F34=6549=zhangsan52=20190104-09:40:25.49556=COINSUPER37=162172076101837209710=112
 ```
 
- Responce Sample: 
+ >Responce Sample: 
 
 ```
 8=FIX.4.49=15435=834=12749=COINSUPER52=20190104-09:40:24.38956=zhangsan20=137=162172076101837209739=460=20190104-17:40:24.389150=410=041
@@ -405,9 +387,7 @@ Queries are made into partially executed and in-progress orders
 
 Request MsgType:
 
-```
-OrderStatusRequest
-```
+`OrderStatusRequest`
 
 API Request Parameters:
 
@@ -417,9 +397,7 @@ API Request Parameters:
 
 Response MsgType:
 
-```
-ExecutionReport
-```
+`ExecutionReport`
 
 Response Parameters:
 
@@ -435,13 +413,13 @@ Response Parameters:
 | Symbol        | 55         | Trading pairs                            |
 | TransactTime  | 60         | Delivery time of response messages (UTC time) |
 
-Request Sample:
+>Request Sample:
 
 ```
 8=FIX.4.49=11235=H34=1849=zhangsan52=20190104-10:01:52.86256=COINSUPER37=162172183852353945710=111
 ```
 
- Response Sample: 
+>Response Sample: 
 
 ```
 8=FIX.4.49=22335=834=16949=COINSUPER52=20190104-10:01:51.70456=dba8ef1f-6e3f-43ed-ae67-0668c3e933636=014=017=37e01f58367948fdaedf8dace2ea62ff20=337=162172183852353945739=A54=255=BTC/USD60=20190104-18:01:51.704150=I151=0.210=199
